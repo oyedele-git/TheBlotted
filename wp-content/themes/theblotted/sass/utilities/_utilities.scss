@@ -1,0 +1,92 @@
+// This file contains font styles
+
+.ss-text {
+    &-header {
+        &--1 {
+            @apply text-white text-[56px] leading-[44px] font-bold;
+        }
+        &--2 {
+            @apply text-black text-[32px] leading-[44px] font-bold;
+        }
+        &--3 {
+            @apply text-white text-[32px] leading-[44px] font-bold;
+        }
+        &--4 {
+            @apply text-black text-[24px] leading-[40px] font-bold;
+        }
+        &--5 {
+            @apply text-black text-[20px] leading-[26.1px] font-bold;
+        }
+        &--6 {
+            @apply text-black text-[16px] leading-[44px] font-bold;
+        }
+        &--7 {
+            @apply text-black text-[24px] leading-[31.32px] font-bold;
+        }
+        &--8 {
+            @apply text-white text-[24px] leading-[31.32px] font-bold;
+        }
+        &--9 {
+            @apply text-[#251D14] text-[16px] leading-[21.79px] font-bold font-open-sans;
+        }
+        &--10 {
+            @apply text-[#000000] text-[24px] leading-[44px] font-[600];
+        }
+        &--11 {
+            @apply text-black text-[56px] leading-[44px] font-bold;
+        }
+        &--12 {
+            @apply text-[#FBF6EE] text-[16px] leading-[21.79px] font-bold font-open-sans;
+        }
+        &--13 {
+            @apply text-[16px] leading-[10.05px] text-black font-garamond font-bold;
+        }
+    }
+
+    &-body {
+        @apply font-normal text-[16px];
+        &--1 {
+            @apply leading-[21.79px] text-black font-open-sans italic;
+        } 
+        &--2 {
+            @apply leading-[20.88px] text-black font-garamond;
+        }
+        &--3 {
+            @apply leading-[21.59px] text-black font-palatino;
+        }
+        &--4 {
+            @apply leading-[20.88px] text-white font-garamond;
+        }
+        &--5 {
+            @apply text-[12px] leading-[16.34px] text-black font-open-sans italic;
+        }
+        &--6 {
+            @apply leading-[21.79px] text-white font-open-sans italic;
+        }
+        &--7 {
+            @apply leading-[21.59px] text-white font-palatino;
+        }
+        &--8 {
+            @apply text-[12px] leading-[16.34px] text-white font-open-sans italic;
+        }
+        &--9 {
+            @apply text-[12px] leading-[16.34px] text-black font-open-sans italic;
+        }
+    }
+
+    &-btn {
+        @apply font-open-sans font-bold leading-[21.79px] flex w-[273px] justify-center items-center;
+
+        &-1 {
+            @apply text-[#251D14] pt-[13px] pr-0 pb-[13px] pl-0 bg-[#FFFFFF];
+        }
+
+        &-2 {
+            @apply text-[#FFFFFF];
+        }
+
+        &-3 {
+            @apply text-[#FBF6EE] pt-[13px] pr-0 pb-[13px] pl-0 bg-[#251D14];
+        }
+    }
+}

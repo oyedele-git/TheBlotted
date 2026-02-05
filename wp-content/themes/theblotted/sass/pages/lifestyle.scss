@@ -1,0 +1,265 @@
+@use "base" as *;
+@use "variables" as *;
+@use "mixins" as *;
+@use "utilities" as *;
+
+main {
+  @include flex-wrapper;
+  @include padding-desktop;
+
+  .app-wrapper {
+    @include wrapper-container;
+    // width: 100% !important;
+    gap: 40px;
+
+    @media (min-width: $break-point-at-bigscreen) {
+      gap: 80px;
+    }
+
+    .lifestyle-container {
+      @include flex-wrapper;
+      flex-direction: column;
+      justify-content: start;
+      align-items: start;
+      gap: 40px;
+
+      .lifestyle-cards {
+        display: flex;
+        justify-content: start;
+        align-items: start;
+        @include spacing-gap;
+
+        .first-card {
+          display: none;
+          width: 100%;
+          //   max-width: 563px;
+
+          @media (min-width: $break-point-lg) {
+            display: block !important;
+            justify-content: start;
+            align-items: start;
+          }
+
+          .card-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: start;
+            align-items: start;
+            gap: 18px;
+            width: 100%;
+            overflow: hidden;
+
+            @media (min-width: $break-point-at-bigscreen) {
+              gap: 24px;
+              flex-direction: column;
+            }
+
+            .card-img {
+              @media (min-width: $break-point-at-bigscreen) {
+                max-height: 832px;
+              }
+
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
+            }
+
+            .text-container {
+              gap: 16px;
+            }
+          }
+        }
+
+        .second-card {
+          display: flex;
+          flex-direction: column;
+          justify-content: start;
+          align-items: start;
+          @include spacing-gap;
+
+          @media (min-width: $break-point-at-bigscreen) {
+            flex-direction: column;
+          }
+
+          //   @media (min-width: $break-point-lg) {
+          //     width: 100%;
+          //   }
+
+          & > :first-child {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            @include spacing-gap;
+
+            @media (min-width: $break-point-at-bigscreen) {
+              flex-direction: row;
+            }
+
+            .card-1 {
+              width: 100%;
+              flex-direction: column !important;
+
+              .card-img {
+                max-height: 300px !important;
+              }
+            }
+            .card-2 {
+              flex-direction: column !important;
+              width: 100%;
+
+              @media (min-width: $break-point-at-bigscreen) {
+                width: 70%;
+              }
+
+              .card-img {
+                max-height: 300px !important;
+              }
+            }
+          }
+          & > :last-child {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            @include spacing-gap;
+
+            @media (min-width: $break-point-at-bigscreen) {
+              flex-direction: row;
+            }
+
+            .card-1 {
+              width: 100%;
+              flex-direction: column !important;
+
+              .card-img {
+                max-height: 300px !important;
+              }
+            }
+            .card-2 {
+              flex-direction: column !important;
+              width: 100%;
+              max-height: 474px;
+              @media (min-width: $break-point-at-bigscreen) {
+                width: 70%;
+              }
+
+              .card-img {
+                max-height: 300px !important;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // for the same cards
+    .card-wrap {
+      @include flex-wrapper;
+      flex-direction: column;
+      gap: 40px;
+      // overflow: hidden;
+
+      .card-section {
+        @include flex-wrapper;
+        flex-direction: column;
+        gap: 20px;
+
+        .cards-grid {
+          display: grid;
+          grid-template-columns: 1fr; // mobile → 1 column
+          gap: 20px;
+          width: 100%;
+
+          // Tablet & medium screens → 2 columns
+          @media (min-width: $break-point-at-bigscreen) {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          // Large screens → 3 columns
+          @media (min-width: 1024px) {
+            grid-template-columns: repeat(4, 1fr);
+          }
+
+          .card-container {
+            // height: 514px;
+            // .card-img{
+            //     max-height: 300px !important;
+            // }
+            .card-img {
+              //   max-height: 152px !important;
+
+              @media (min-width: $break-point-lg) {
+                max-height: 300px !important;
+              }
+            }
+          }
+        }
+      }
+      button {
+        @extend .btn;
+      }
+    }
+  }
+}
+
+.image-background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  padding: 100px;
+  width: 100%;
+  border-bottom: 50px solid $secondary-color !important;
+
+  .email-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 473px;
+    width: 100%;
+    gap: 24px;
+
+    h2 {
+      @include small-text;
+      color: #ffffff;
+      line-height: 100%;
+      letter-spacing: 0%;
+      text-align: center;
+    }
+
+    .email-container {
+      all: unset;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      max-width: 273px;
+      width: 100%;
+
+      form {
+        all: unset;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        gap: 24px;
+        button {
+          position: relative;
+          @extend .btn; // reuse your button styles
+        }
+      }
+    }
+  }
+}
+
+.img-height {
+  height: 195px !important;
+  padding: 0px !important;
+  width: 100%;
+
+  @media (min-width: $break-point-nav-lg) {
+    height: 400px !important;
+  }
+}
