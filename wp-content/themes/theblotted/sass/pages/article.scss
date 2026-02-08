@@ -1,0 +1,504 @@
+@use "base" as *;
+@use "variables" as *;
+@use "mixins" as *;
+@use "utilities" as *;
+
+.site-wrapper {
+  gap: 24px;
+
+  * {
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none; // IE & Edge
+  }
+
+  *::-webkit-scrollbar {
+    display: none; // Chrome, Safari, Opera
+  }
+}
+
+main {
+  @include flex-wrapper;
+  @include padding-desktop;
+
+  .app-wrapper {
+    @include wrapper-container;
+    gap: 24px;
+
+    @media (min-width: $break-point-nav-lg) {
+      gap: 80px;
+    }
+
+    .hero-section {
+      @include flex-wrapper;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+
+      @media (min-width: $break-point-nav-lg) {
+        gap: 40px;
+      }
+
+      .topic {
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        flex-direction: column;
+        width: 100%;
+
+        .text-box {
+          display: flex;
+          flex-direction: column;
+          justify-content: start;
+          align-items: start;
+          gap: 16px;
+
+          .card-topic {
+            color: $text-black;
+            font-size: 16px;
+            line-height: 100%;
+            letter-spacing: 0%;
+            text-transform: uppercase !important;
+          }
+
+          .card-title {
+            // @include extra-large-text;
+            color: $text-black;
+            line-height: 100%;
+            letter-spacing: 0%;
+            text-transform: uppercase;
+            max-width: 857.59px;
+          }
+          .discription {
+            color: $text-black;
+            font-size: 16px;
+            line-height: 100%;
+            letter-spacing: 0%;
+          }
+          .card-author {
+            font-family: $font-nav !important;
+            @include extra-small-text;
+            line-height: 100%;
+            letter-spacing: 0%;
+            font-style: italic;
+          }
+        }
+      }
+
+      .image-background {
+        height: auto;
+        width: 100%;
+
+        @media (min-width: $break-point-nav-lg) {
+          height: 250px !important;
+        }
+      }
+    }
+
+    .text-section {
+      @include flex-wrapper;
+      flex-direction: column;
+
+      .more-like-this {
+        @include flex-wrapper;
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+
+        @media (min-width: $break-point-nav-lg) {
+          flex-direction: row;
+          gap: 40px;
+        }
+
+        .text-wrapper {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: start;
+          gap: 24px;
+          width: 100%;
+
+          .sub-text-container {
+            .sub-text {
+              @include subtext;
+            }
+            p {
+              font-size: 16px;
+              font-family: $font-main !important;
+              line-height: 26px !important;
+              color: $text-black;
+              letter-spacing: normal;
+            }
+          }
+          h4 {
+            font-weight: 700;
+            font-style: Bold;
+            font-size: 24px;
+            color: $text-black;
+            line-height: 100%;
+            letter-spacing: 0%;
+          }
+        }
+
+        .text-card-section {
+          @include flex-wrapper;
+          flex-direction: column;
+          gap: 24px;
+          width: 100%;
+          height: 100%;
+
+          @media (min-width: $break-point-nav-lg) {
+            width: 70%;
+          }
+
+          .section-cards {
+            @include flex-wrapper;
+            flex-direction: column;
+            justify-content: center;
+            align-items: start;
+            gap: 24px;
+            width: 100%;
+            transition: all 0.3s ease-in-out;
+            // border-left: 0.5px solid #1d1d1d80;
+
+            @media (min-width: $break-point-nav-lg) {
+              border-left: 0.5px solid #1d1d1d80;
+              padding-left: 30px;
+            }
+          }
+        }
+      }
+
+      .history-002 {
+        @include flex-wrapper;
+        flex-direction: column;
+        align-items: start;
+        gap: 10px;
+
+        @media (min-width: $break-point-nav-lg) {
+          flex-direction: row;
+          gap: 40px;
+        }
+
+        .text-wrapper-history-002 {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: start;
+          gap: 40px;
+          width: 100%;
+          width: 100%;
+
+          @media (min-width: $break-point-nav-lg) {
+            width: 70%;
+          }
+
+          .sub-text-container {
+            .sub-text {
+              @include subtext;
+            }
+            p {
+              font-size: 16px;
+              line-height: 100%;
+              color: $text-black;
+              letter-spacing: normal;
+              // text-align: justify;
+              // text-justify: inter-word;
+            }
+          }
+          h4 {
+            font-weight: 700;
+            font-style: Bold;
+            font-size: 24px;
+            color: $text-black;
+            line-height: 100%;
+            letter-spacing: 0%;
+          }
+        }
+        .text-card-history-002 {
+          @include flex-wrapper;
+          flex-direction: column;
+          gap: 24px;
+          width: 100%;
+
+          .section-cards {
+            @include flex-wrapper;
+            flex-direction: column;
+            justify-content: center;
+            align-items: start;
+            gap: 24px;
+            width: 100%;
+            transition: all 0.3s ease-in-out;
+            // border-left: 0.5px solid #1d1d1d80;
+
+            @media (min-width: $break-point-nav-lg) {
+              border-left: 0.5px solid #1d1d1d80;
+              padding-left: 30px;
+            }
+          }
+          .section-cards-image {
+            @include flex-wrapper;
+            flex-direction: column;
+            justify-content: center;
+            align-items: start;
+            gap: 24px;
+            max-height: 1000px;
+            width: 100%;
+            overflow: hidden;
+
+            transition: all 0.3s ease-in-out;
+
+            .image {
+              height: 568px !important;
+
+              @media (min-width: $break-point-nav-lg) {
+                height: auto !important;
+              }
+
+              img {
+                object-fit: cover;
+                object-position: center;
+              }
+            }
+          }
+        }
+      }
+
+      .reverse {
+        flex-direction: column-reverse !important;
+
+        @media (min-width: $break-point-nav-lg) {
+          flex-direction: row !important;
+        }
+      }
+    }
+
+    // for comments starts here
+    .comments-wrapper {
+      @include flex-wrapper;
+      flex-direction: column;
+      .more-comments {
+        @include flex-wrapper;
+        flex-direction: column;
+        gap: 10px;
+
+        @media (min-width: $break-point-nav-lg) {
+          flex-direction: row;
+          gap: 40px;
+        }
+
+        .text-wrapper-comments {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: start;
+          gap: 40px;
+          width: 100%;
+          overflow: hidden;
+
+          .scroll-wrapper {
+            overflow: auto;
+            height: auto;
+            max-height: 1018px;
+            width: 100%;
+
+            .comment {
+              @include flex-wrapper;
+              align-items: start;
+              gap: 16px;
+              width: 100%;
+              margin-bottom: 20px;
+
+              @media (min-width: $break-point-nav-lg) {
+                gap: 40px;
+              }
+            }
+
+            .comment-content {
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: flex-start;
+              width: 100%;
+              margin-top: 20px;
+
+              .content-contributor {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: flex-start;
+                gap: 16px;
+                width: 100%;
+
+                @media (min-width: $break-point-nav-lg) {
+                  gap: 40px;
+                }
+
+                .user-comment {
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: flex-start;
+                  align-items: flex-start;
+                  gap: 20px;
+                  width: 100%;
+                  // overflow: auto;
+
+                  .day {
+                    display: flex;
+                    align-self: start;
+                    justify-content: space-between;
+                    width: 100%;
+
+                    h3 {
+                      @include extra-small-text;
+                      letter-spacing: 0%;
+                      text-transform: uppercase;
+                    }
+
+                    p {
+                      font-family: Inter !important;
+                      font-weight: 400;
+                      font-size: 12px;
+                      letter-spacing: 0%;
+                      text-align: right;
+                      font-style: italic;
+                    }
+                  }
+
+                  .discription {
+                    font-size: 16px;
+                    line-height: 100%;
+                    letter-spacing: 0%;
+                    max-width: 510px;
+                  }
+
+                  .actions {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    margin-bottom: 10px;
+
+                    span {
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      color: #c7c7c7;
+                      cursor: pointer;
+                      transition: 0.2s;
+
+                      &:hover {
+                        transform: scale(1.2);
+                      }
+                    }
+
+                    .toggle-replies {
+                      background: none;
+                      border: none;
+                      color: #d1b574;
+                      cursor: pointer;
+                      font-size: 14px;
+                    }
+
+                    button {
+                      @extend .reply;
+                      position: relative;
+                    }
+                  }
+                  button {
+                    @extend .reply;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .text-card-section {
+          @include flex-wrapper;
+          flex-direction: column;
+          gap: 24px;
+          width: 100%;
+
+          @media (min-width: $break-point-nav-lg) {
+            width: 70%;
+          }
+
+          .section-cards {
+            @include flex-wrapper;
+            flex-direction: column;
+            justify-content: center;
+            align-items: start;
+            gap: 24px;
+            width: 100%;
+            padding-left: 0px;
+            transition: all 0.3s ease-in-out;
+            // border-left: 0.5px solid #1d1d1d80;
+
+            @media (min-width: $break-point-nav-lg) {
+              border-left: 0.5px solid #1d1d1d80;
+              padding-left: 30px;
+            }
+
+           
+          }
+        }
+      }
+    }
+    // for comments ends here
+
+    .Author-container {
+      @include flex-wrapper;
+      flex-direction: column;
+      align-items: start;
+      gap: 24px;
+    }
+
+    // for the same cards
+    .card-wrap {
+      @include flex-wrapper;
+      flex-direction: column;
+      gap: 40px;
+      // overflow: hidden;
+
+      .card-section {
+        @include flex-wrapper;
+        flex-direction: column;
+        gap: 20px;
+
+        .cards-grid {
+          display: grid;
+          grid-template-columns: 1fr; // mobile → 1 column
+          gap: 20px;
+          width: 100%;
+
+          // Tablet & medium screens → 2 columns
+          @media (min-width: $break-point-at-bigscreen) {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          // Large screens → 3 columns
+          @media (min-width: 1024px) {
+            grid-template-columns: repeat(4, 1fr);
+          }
+
+          .card-container {
+            // height: 514px;
+            // .card-img{
+            //     max-height: 300px !important;
+            // }
+            .card-img {
+              //   max-height: 152px !important;
+
+              @media (min-width: $break-point-lg) {
+                max-height: 300px !important;
+              }
+            }
+          }
+        }
+      }
+      button {
+        @extend .btn;
+      }
+    }
+  }
+}

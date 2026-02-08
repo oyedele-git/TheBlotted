@@ -1,0 +1,163 @@
+@use "base" as *;
+@use "variables" as *;
+@use "mixins" as *;
+@use "utilities" as *;
+
+main {
+  @include flex-wrapper;
+  @include padding-desktop;
+
+  .app-wrapper {
+    @include wrapper-container;
+    gap: 24px;
+
+    @media (min-width: $break-point-at-bigscreen) {
+      gap: 80px;
+    }
+
+    .hero-section {
+      @include flex-wrapper;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+
+      @media (min-width: $break-point-nav-lg) {
+        gap: 40px;
+      }
+
+      .topic {
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        flex-direction: column;
+        width: 100%;
+
+        .text-box {
+          display: flex;
+          flex-direction: column;
+          justify-content: start;
+          align-items: start;
+          gap: 16px;
+
+          .card-topic {
+            color: $text-black;
+            font-size: 16px;
+            line-height: 100%;
+            letter-spacing: 0%;
+            text-transform: uppercase;
+          }
+
+          .card-title {
+            @include extra-large-text;
+            color: $text-black;
+            line-height: 100%;
+            letter-spacing: 0%;
+            text-transform: uppercase;
+            max-width: 857.59px;
+          }
+          .discription {
+            color: $text-black;
+            font-size: 16px;
+            line-height: 100%;
+            letter-spacing: 0%;
+          }
+          .card-author {
+            font-family: $font-nav !important;
+            @include extra-small-text;
+            line-height: 100%;
+            letter-spacing: 0%;
+            font-style: italic;
+          }
+        }
+      }
+
+      .img-height {
+        height: 195px !important;
+        padding: 0px;
+        width: 100%;
+
+        @media (min-width: $break-point-nav-lg) {
+          height: 400px !important;
+        }
+      }
+    }
+
+    // for the same cards
+    .card-wrap {
+      @include flex-wrapper;
+      flex-direction: column;
+      gap: 40px;
+      overflow: hidden;
+
+      .nav-link {
+        justify-content: center !important;
+      }
+
+      .card-section {
+        @include flex-wrapper;
+        flex-direction: column;
+        gap: 20px;
+
+        .cards-grid {
+          display: grid;
+          grid-template-columns: 1fr; // mobile → 1 column
+          gap: 20px;
+          width: 100%;
+
+          // Tablet & medium screens → 2 columns
+          @media (min-width: $break-point-at-bigscreen) {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          // Large screens → 3 columns
+          @media (min-width: 1024px) {
+            grid-template-columns: repeat(4, 1fr);
+          }
+
+          .card-container {
+            // height: 514px;
+            // .card-img{
+            //     max-height: 300px !important;
+            // }
+            .card-img {
+              //   max-height: 152px !important;
+
+              @media (min-width: $break-point-lg) {
+                max-height: 300px !important;
+              }
+            }
+          }
+        }
+      }
+      .img-height {
+        height: 195px !important;
+        padding: 0px !important;
+        width: 100%;
+
+        @media (min-width: $break-point-nav-lg) {
+          height: 400px !important;
+        }
+      }
+
+      button {
+        @extend .btn;
+      }
+    }
+
+    .section-flex {
+      display: flex;
+      justify-content: start;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .image-background {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      // padding: 100px;
+      width: 100%;
+    }
+  }
+}
