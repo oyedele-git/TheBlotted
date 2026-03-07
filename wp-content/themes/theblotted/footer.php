@@ -1,218 +1,74 @@
 <?php
-
 /**
  * The template for displaying the footer
  *
- * Contains the closing of the #content div and all content after.
+ * Contains the site footer and the closing </body></html> tags.
  *
  * @link https://developer.wordpress.org/themes/basics/template-files/#template-partials
  *
  * @package theblotted
  */
 
-// Social Handles
+// Social handles from theme customizer
 $footer_instagram = get_theme_mod('the-blotted-instagram-setting');
-$footer_facebook = get_theme_mod('the-blotted-facebook-setting');
-$footer_threads  = get_theme_mod('the-blotted-threads-setting');
-$footer_twitter  = get_theme_mod('the-blotted-twitter-setting');
-
-// Footer menu items
-$footer_menu_items = [];
-$menu_locations    = get_nav_menu_locations();
-
-if (!empty($menu_locations['footer-menu'])) {
-	$footer_menu      = wp_get_nav_menu_object($menu_locations['footer-menu']);
-	$footer_menu_items = $footer_menu ? wp_get_nav_menu_items($footer_menu->term_id) : [];
-}
-
-if (!function_exists('theblotted_render_footer_links')) {
-	/**
-	 * Render footer links with optional active styling.
-	 */
-	function theblotted_render_footer_links($menu_items, $emphasize_dark = false)
-	{
-		$home_url = trailingslashit(home_url('/'));
-		echo '<ul class="links-list">';
-		if (!empty($menu_items)) {
-			foreach ($menu_items as $item) {
-				$link_url     = !empty($item->url) ? $item->url : '#';
-				$is_home_link = untrailingslashit($link_url) === untrailingslashit($home_url);
-				$style_attr   = '';
-				if ($is_home_link) {
-					$style_attr = $emphasize_dark ? 'font-weight: 700 !important; color: #111827 !important;' : 'font-weight: 700 !important;';
-				}
-				?>
-					<li class="link">
-						<a href="<?php echo esc_url($link_url); ?>">
-							<p<?php echo $style_attr ? ' style="' . esc_attr($style_attr) . '"' : ''; ?>>
-								<?php echo esc_html($item->title); ?>
-							</p>
-						</a>
-					</li>
-				<?php
-			}
-		} else {
-			$default_links = [
-				['title' => __('home', 'theblotted'), 'url' => home_url('/')],
-				['title' => __('Issues', 'theblotted'), 'url' => get_permalink(get_page_by_path('issues'))],
-				['title' => __('literature', 'theblotted'), 'url' => get_permalink(get_page_by_path('literature'))],
-				['title' => __('Pop Of Culture', 'theblotted'), 'url' => get_permalink(get_page_by_path('pop-of-culture'))],
-				['title' => __('lifestyle', 'theblotted'), 'url' => get_permalink(get_page_by_path('lifestyle'))],
-				['title' => __('comedy', 'theblotted'), 'url' => get_permalink(get_page_by_path('comedy'))],
-				['title' => __('Cartoons & Crosswords', 'theblotted'), 'url' => get_permalink(get_page_by_path('cartoons-crosswords'))],
-				['title' => __('About', 'theblotted'), 'url' => get_permalink(get_page_by_path('about-us'))],
-			];
-			foreach ($default_links as $default) {
-				if (empty($default['url'])) {
-					continue;
-				}
-				$is_home_link = untrailingslashit($default['url']) === untrailingslashit($home_url);
-				$style_attr   = '';
-				if ($is_home_link) {
-					$style_attr = $emphasize_dark ? 'font-weight: 700 !important; color: #111827 !important;' : 'font-weight: 700 !important;';
-				}
-				?>
-					<li class="link">
-						<a href="<?php echo esc_url($default['url']); ?>">
-							<p<?php echo $style_attr ? ' style="' . esc_attr($style_attr) . '"' : ''; ?>>
-								<?php echo esc_html($default['title']); ?>
-							</p>
-						</a>
-					</li>
-				<?php
-			}
-		}
-		echo '</ul>';
-	}
-}
+$footer_facebook  = get_theme_mod('the-blotted-facebook-setting');
+$footer_threads   = get_theme_mod('the-blotted-threads-setting');
+$footer_twitter   = get_theme_mod('the-blotted-twitter-setting');
 ?>
 
-<footer class="show">
-	<div class="app-wrapper">
-		<div>
-			<div class="logo">
-				<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/image1.png'); ?>" alt="<?php esc_attr_e('The Blotted logo', 'theblotted'); ?>" />
-			</div>
+<!-- FOOTER -->
+<footer class="site-footer">
+  <hr class="foot-div"/>
+  <div class="foot-main">
 
-			<div class="link-wrap">
-				<?php theblotted_render_footer_links($footer_menu_items, true); ?>
-			</div>
+    <!-- Logo -->
+    <a href="<?php echo esc_url(home_url('/')); ?>" class="foot-logo">THEB<span class="ink">L</span>OTTED</a>
 
-			<ul class="social-media">
-				<?php if (!empty($footer_instagram)) : ?>
-					<li class="media">
-						<a href="<?php echo esc_url($footer_instagram); ?>" target="_blank" rel="noopener">
-							<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/icon/Instagram.png'); ?>" alt="Instagram" />
-						</a>
-					</li>
-				<?php endif; ?>
-				<?php if (!empty($footer_facebook)) : ?>
-					<li class="media">
-						<a href="<?php echo esc_url($footer_facebook); ?>" target="_blank" rel="noopener">
-							<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/icon/facebook.png'); ?>" alt="Facebook" />
-						</a>
-					</li>
-				<?php endif; ?>
-				<?php if (!empty($footer_threads)) : ?>
-					<li class="media">
-						<a href="<?php echo esc_url($footer_threads); ?>" target="_blank" rel="noopener">
-							<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/icon/icons@.png'); ?>" alt="Threads" />
-						</a>
-					</li>
-				<?php endif; ?>
-				<?php if (!empty($footer_twitter)) : ?>
-					<li class="media">
-						<a href="<?php echo esc_url($footer_twitter); ?>" target="_blank" rel="noopener">
-							<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/icon/x.png'); ?>" alt="Twitter" />
-						</a>
-					</li>
-				<?php endif; ?>
-			</ul>
-		</div>
-		<div>
-			<h4>
-				© <?php echo esc_html(date('Y')); ?> TheBlotted. All Rights Reserved.
-			</h4>
-		</div>
-	</div>
-</footer>
+    <!-- Footer nav -->
+    <nav class="foot-nav">
+      <?php
+      wp_nav_menu([
+        'theme_location' => 'footer-menu',
+        'container'      => false,
+        'menu_class'     => '',
+        'items_wrap'     => '%3$s',
+        'fallback_cb'    => false,
+      ]);
+      ?>
+    </nav>
 
-<footer class="hide">
-	<div
-		class="image-background"
-		style="
-			background-color: #8e8585;
-			padding-top: 100px;
-			padding-bottom: 100px;
-			width: 100%;
-		"
-	>
-		<div class="email-box" style="width: 273px">
-			<h2 style="font-size: 24px">
-				<?php esc_html_e('Subscribe to our newsletter to get weekly updates to your inbox.', 'theblotted'); ?>
-			</h2>
+    <!-- Social icons -->
+    <div class="foot-social">
+      <?php if (!empty($footer_instagram)) : ?>
+        <a href="<?php echo esc_url($footer_instagram); ?>" target="_blank" rel="noopener" aria-label="<?php esc_attr_e('Instagram', 'theblotted'); ?>">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+      <?php endif; ?>
 
-			<div class="email-container">
-				<form action="#" method="post">
-					<input
-						type="email"
-						name="newsletter-email"
-						autocomplete="email"
-						placeholder="<?php esc_attr_e('Email', 'theblotted'); ?>"
-						required
-					/>
-					<button type="submit"><?php esc_html_e('Subscribe', 'theblotted'); ?></button>
-				</form>
-			</div>
-		</div>
-	</div>
-	<div class="app-wrapper">
-		<div>
-			<div class="logo">
-				<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/image1.png'); ?>" alt="<?php esc_attr_e('The Blotted logo', 'theblotted'); ?>" />
-			</div>
+      <?php if (!empty($footer_facebook)) : ?>
+        <a href="<?php echo esc_url($footer_facebook); ?>" target="_blank" rel="noopener" aria-label="<?php esc_attr_e('Facebook', 'theblotted'); ?>">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+      <?php endif; ?>
 
-			<div class="link-wrap">
-				<?php theblotted_render_footer_links($footer_menu_items, false); ?>
-			</div>
+      <?php if (!empty($footer_threads)) : ?>
+        <a href="<?php echo esc_url($footer_threads); ?>" target="_blank" rel="noopener" aria-label="<?php esc_attr_e('Threads', 'theblotted'); ?>">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.378-.887h-.018c-.852 0-1.963.254-2.692 1.302l-1.678-1.158c.986-1.426 2.609-2.21 4.37-2.21h.023c3.188.017 5.037 1.954 5.07 5.329.022.237.033.475.033.712 0 .957-.13 1.886-.38 2.766-.498 1.773-1.46 3.17-2.86 4.17-1.363.976-3.072 1.466-5.085 1.466z"/></svg>
+        </a>
+      <?php endif; ?>
 
-			<ul class="social-media">
-				<?php if (!empty($footer_instagram)) : ?>
-					<li class="media">
-						<a href="<?php echo esc_url($footer_instagram); ?>" target="_blank" rel="noopener">
-							<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/icon/Instagram.png'); ?>" alt="Instagram" />
-						</a>
-					</li>
-				<?php endif; ?>
-				<?php if (!empty($footer_facebook)) : ?>
-					<li class="media">
-						<a href="<?php echo esc_url($footer_facebook); ?>" target="_blank" rel="noopener">
-							<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/icon/facebook.png'); ?>" alt="Facebook" />
-						</a>
-					</li>
-				<?php endif; ?>
-				<?php if (!empty($footer_threads)) : ?>
-					<li class="media">
-						<a href="<?php echo esc_url($footer_threads); ?>" target="_blank" rel="noopener">
-							<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/icon/icons@.png'); ?>" alt="Threads" />
-						</a>
-					</li>
-				<?php endif; ?>
-				<?php if (!empty($footer_twitter)) : ?>
-					<li class="media">
-						<a href="<?php echo esc_url($footer_twitter); ?>" target="_blank" rel="noopener">
-							<img src="<?php echo esc_url(THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/icon/x.png'); ?>" alt="Twitter" />
-						</a>
-					</li>
-				<?php endif; ?>
-			</ul>
-		</div>
-		<div>
-			<h4>
-				© <?php echo esc_html(date('Y')); ?> TheBlotted. All Rights Reserved.
-			</h4>
-		</div>
-	</div>
+      <?php if (!empty($footer_twitter)) : ?>
+        <a href="<?php echo esc_url($footer_twitter); ?>" target="_blank" rel="noopener" aria-label="<?php esc_attr_e('X (Twitter)', 'theblotted'); ?>">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      <?php endif; ?>
+    </div><!-- /foot-social -->
+
+  </div><!-- /foot-main -->
+
+  <p class="foot-copy">&copy; <?php echo esc_html(date('Y')); ?> TheBlotted. All Rights Reserved.</p>
 </footer>
 
 <?php wp_footer(); ?>
+</body>
+</html>

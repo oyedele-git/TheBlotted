@@ -1,696 +1,632 @@
 <?php
-
 /**
  * Template part for Homepage
+ * Based on theblotted-header-v2.html structure.
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
+ * @package theblotted
  */
 
-$next_link_img = esc_url( THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/next-link.png' );
+$rendered_post_ids = [];
+
+// ── Helper: get excerpt safely ──
+function theblotted_home_excerpt( $post_obj, $words = 20 ) {
+    $src = get_the_excerpt( $post_obj );
+    if ( $src === '' ) {
+        $src = get_the_content( null, false, $post_obj );
+    }
+    return esc_html( wp_trim_words( wp_strip_all_tags( $src ), $words, '…' ) );
+}
+
+// ── Sticky posts for hero slider (up to 3) ──
+$sticky_ids   = get_option( 'sticky_posts', [] );
+$slider_query = new WP_Query( [
+    'post__in'            => ! empty( $sticky_ids ) ? $sticky_ids : [0],
+    'posts_per_page'      => 3,
+    'ignore_sticky_posts' => 1,
+    'orderby'             => 'date',
+    'order'               => 'DESC',
+] );
+
+// Fallback: if not enough sticky posts, pad with latest
+if ( $slider_query->post_count < 3 ) {
+    $slider_query = new WP_Query( [
+        'posts_per_page'      => 3,
+        'ignore_sticky_posts' => 1,
+        'orderby'             => 'date',
+        'order'               => 'DESC',
+    ] );
+}
+
+$slider_posts = $slider_query->posts;
+wp_reset_postdata();
+
+foreach ( $slider_posts as $sp ) {
+    $rendered_post_ids[] = $sp->ID;
+}
+
+// ── Pre-hero strip: 2 posts (desktop) ──
+$prehero_query = new WP_Query( [
+    'posts_per_page'      => 2,
+    'post__not_in'        => $rendered_post_ids,
+    'ignore_sticky_posts' => 1,
+    'orderby'             => 'date',
+    'order'               => 'DESC',
+] );
+$prehero_posts = $prehero_query->posts;
+wp_reset_postdata();
+foreach ( $prehero_posts as $ph_p ) {
+    $rendered_post_ids[] = $ph_p->ID;
+}
 ?>
 
-<main>
-  <div class="app-wrapper">
-    <!-- desktop here -->
-    <section class="hero-section">
-      <div style="display: flex; flex-direction: column; width: 100%">
-        <div class="topic-section">
-          <div class="topic-container">
-            <?php
-            $sticky_posts = get_option( 'sticky_posts' );
-            $rendered_post_ids = [];
-            $topic_query = new WP_Query(
-                [
-                'post__not_in'        => $sticky_posts,
-                'posts_per_page'      => 3,
-                'ignore_sticky_posts' => 1,
-                'orderby'             => 'date',
-                'order'               => 'DESC',
-                ]
-            );
-            ?>
+<!-- DESKTOP PRE-HERO STRIP (in page flow, scrolls with page) -->
+<div class="pre-hero-wrap">
+  <div class="pre-hero">
 
-            <?php if ( $topic_query->have_posts() ) : ?>
-                <?php while ( $topic_query->have_posts() ) : $topic_query->the_post(); ?>
-                    <?php
-                    $rendered_post_ids[] = get_the_ID();
-                    $categories          = get_the_category();
-                    $topic_label         = $categories ? $categories[0]->name : '';
-                    ?>
-                <div class="topic-cards">
-                  <div class="card-image">
-                    <?php if ( has_post_thumbnail() ) : ?>
-                      <a href="<?php echo esc_url( get_permalink() ); ?>">
-                        <?php the_post_thumbnail( 'medium', [ 'alt' => esc_attr( get_the_title() ) ] ); ?>
-                      </a>
-                    <?php endif; ?>
-                  </div>
-                  <div class="text-box">
-                    <p class="card-topic"><?php echo esc_html( $topic_label ); ?></p>
-                    <h2 class="card-title">
-                      <a href="<?php echo esc_url( get_permalink() ); ?>"><?php the_title(); ?></a>
-                    </h2>
-                    <span class="card-author"><?php echo esc_html( get_the_author() ); ?></span>
-                  </div>
-                </div>
-                <?php endwhile; ?>
-                <?php wp_reset_postdata(); ?>
-            <?php endif; ?>
-          </div>
-        </div>
-      </div>
-      <div id="top" class="wrap">
-        <div class="home swiper">
-          <div class="swiper-wrapper">
-            <?php
-            $sticky_query = new WP_Query(
-                [
-                'post__in'            => $sticky_posts,
-                'posts_per_page'      => 3,
-                'ignore_sticky_posts' => 1,
-                'orderby'             => 'date',
-                'order'               => 'DESC',
-                ]
-            );
-            ?>
-
-            <?php if ( $sticky_query->have_posts() ) : ?>
-                <?php while ( $sticky_query->have_posts() ) : $sticky_query->the_post(); ?>
-                    <?php $rendered_post_ids[] = get_the_ID(); ?>
-                <div class="swiper-slide">
-                  <a class="slide-link" href="<?php echo esc_url( get_permalink() ); ?>">
-                    <?php if ( has_post_thumbnail() ) : ?>
-                        <?php the_post_thumbnail( 'full', [ 'class' => 'slide-bg', 'alt' => esc_attr( get_the_title() ) ] ); ?>
-                    <?php endif; ?>
-                    <div class="overlay"></div>
-                    <div class="content">
-                      <h1><?php the_title(); ?></h1>
-                      <p>
-                        <?php
-                        $excerpt_source = get_the_excerpt();
-                        if ( $excerpt_source === '' ) {
-                            $excerpt_source = get_the_content();
-                        }
-                        echo esc_html( wp_trim_words( wp_strip_all_tags( $excerpt_source ), 15, '…' ) );
-                        ?>
-                      </p>
-                    </div>
-                  </a>
-                </div>
-                <?php endwhile; ?>
-                <?php wp_reset_postdata(); ?>
-            <?php endif; ?>
-          </div>
-
-          <!-- CUSTOM NAV BUTTONS -->
-          <div class="butts">
-            <span class="prev-btn swiper-button-prev"></span>
-            <span class="next-btn swiper-button-next"></span>
-          </div>
-        </div>
-
-        <!-- SWIPER PAGINATION DOTS -->
-        <div class="navigation swiper-pagination"></div>
-      </div>
-    </section>
-    <hr class="vector" />
-    <section class="trending-container">
-      <div class="nav-link">
-        <h3>THE NEW</h3>
-        <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-          <h3>SEE MORE</h3>
-          <img src="<?php echo $next_link_img; ?>" alt="" />
-        </a>
-      </div>
-      <div class="trend-cards">
-        <?php
-        $new_query = new WP_Query(
-            [
-            'post__not_in'        => $rendered_post_ids,
-            'posts_per_page'      => 5,
-            'ignore_sticky_posts' => 1,
-            'orderby'             => 'date',
-            'order'               => 'DESC',
-            ]
-        );
-        $new_posts = $new_query->posts;
-        wp_reset_postdata();
-        ?>
-        <?php if ( ! empty( $new_posts ) ) : ?>
-            <?php
-            $primary_post = array_shift( $new_posts );
-            $left_posts   = array_slice( $new_posts, 0, 2 );
-            $right_posts  = array_slice( $new_posts, 2, 2 );
-            $rendered_post_ids[] = $primary_post->ID;
-            foreach ( $new_posts as $p ) {
-                $rendered_post_ids[] = $p->ID;
-            }
-            ?>
-          <div class="first-card">
-            <div class="card-container">
-              <div class="card-img">
-                <?php if ( has_post_thumbnail( $primary_post ) ) : ?>
-                  <a href="<?php echo esc_url( get_permalink( $primary_post ) ); ?>">
-                    <?php echo get_the_post_thumbnail( $primary_post, 'large', [ 'alt' => esc_attr( get_the_title( $primary_post ) ) ] ); ?>
-                  </a>
-                <?php endif; ?>
-              </div>
-              <div class="text-container">
-                <h2 class="title">
-                  <a href="<?php echo esc_url( get_permalink( $primary_post ) ); ?>">
-                    <?php echo esc_html( get_the_title( $primary_post ) ); ?>
-                  </a>
-                </h2>
-                <p class="discription">
-                  <?php
-                    $excerpt_source = get_the_excerpt( $primary_post );
-                    if ( $excerpt_source === '' ) {
-                        $excerpt_source = get_the_content( null, false, $primary_post );
-                    }
-                    echo esc_html( wp_trim_words( wp_strip_all_tags( $excerpt_source ), 25, '…' ) );
-                    ?>
-                </p>
-                <span class="author">
-                  <?php echo esc_html( get_the_date( 'F j', $primary_post ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $primary_post->post_author ) ); ?>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="second-card">
-            <div>
-              <?php foreach ( $left_posts as $index => $post ) : ?>
-                <div class="card-container <?php echo $index === 0 ? 'card-1' : 'card-2'; ?>">
-                  <div class="card-img">
-                    <?php if ( has_post_thumbnail( $post ) ) : ?>
-                      <a href="<?php echo esc_url( get_permalink( $post ) ); ?>">
-                        <?php echo get_the_post_thumbnail( $post, 'medium', [ 'alt' => esc_attr( get_the_title( $post ) ) ] ); ?>
-                      </a>
-                    <?php endif; ?>
-                  </div>
-                  <div class="text-container">
-                    <h2 class="title">
-                      <a href="<?php echo esc_url( get_permalink( $post ) ); ?>">
-                        <?php echo esc_html( get_the_title( $post ) ); ?>
-                      </a>
-                    </h2>
-                    <p class="discription">
-                      <?php
-                        $excerpt_source = get_the_excerpt( $post );
-                        if ( $excerpt_source === '' ) {
-                            $excerpt_source = get_the_content( null, false, $post );
-                        }
-                        echo esc_html( wp_trim_words( wp_strip_all_tags( $excerpt_source ), 18, '…' ) );
-                        ?>
-                    </p>
-                    <span class="author">
-                      <?php echo esc_html( get_the_date( 'F j', $post ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $post->post_author ) ); ?>
-                    </span>
-                  </div>
-                </div>
-              <?php endforeach; ?>
-            </div>
-            <div>
-              <?php foreach ( $right_posts as $index => $post ) : ?>
-                <div class="card-container <?php echo $index === 0 ? 'card-1' : 'card-2'; ?>">
-                  <div class="card-img">
-                    <?php if ( has_post_thumbnail( $post ) ) : ?>
-                      <a href="<?php echo esc_url( get_permalink( $post ) ); ?>">
-                        <?php echo get_the_post_thumbnail( $post, 'medium', [ 'alt' => esc_attr( get_the_title( $post ) ) ] ); ?>
-                      </a>
-                    <?php endif; ?>
-                  </div>
-                  <div class="text-container">
-                    <h2 class="title">
-                      <a href="<?php echo esc_url( get_permalink( $post ) ); ?>">
-                        <?php echo esc_html( get_the_title( $post ) ); ?>
-                      </a>
-                    </h2>
-                    <p class="discription">
-                      <?php
-                        $excerpt_source = get_the_excerpt( $post );
-                        if ( $excerpt_source === '' ) {
-                            $excerpt_source = get_the_content( null, false, $post );
-                        }
-                        echo esc_html( wp_trim_words( wp_strip_all_tags( $excerpt_source ), 18, '…' ) );
-                        ?>
-                    </p>
-                    <span class="author">
-                      <?php echo esc_html( get_the_date( 'F j', $post ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $post->post_author ) ); ?>
-                    </span>
-                  </div>
-                </div>
-              <?php endforeach; ?>
-            </div>
-          </div>
+    <?php foreach ( $prehero_posts as $ph_post ) :
+        $ph_cats  = get_the_category( $ph_post->ID );
+        $ph_label = $ph_cats ? $ph_cats[0]->name : '';
+        $ph_thumb = get_the_post_thumbnail_url( $ph_post->ID, 'thumbnail' );
+    ?>
+    <div class="pre-hero-card">
+      <a href="<?php echo esc_url( get_permalink( $ph_post ) ); ?>" class="pre-hero-thumb">
+        <?php if ( $ph_thumb ) : ?>
+          <img class="ph" src="<?php echo esc_url( $ph_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $ph_post ) ); ?>" />
+        <?php else : ?>
+          <div class="ph ph-1"></div>
         <?php endif; ?>
+      </a>
+      <div class="pre-hero-text">
+        <span class="topic-label"><?php echo esc_html( $ph_label ); ?></span>
+        <a href="<?php echo esc_url( get_permalink( $ph_post ) ); ?>" class="post-title"><?php echo esc_html( get_the_title( $ph_post ) ); ?></a>
+        <div class="post-author"><?php echo esc_html( get_the_author_meta( 'display_name', $ph_post->post_author ) ); ?></div>
       </div>
+    </div>
+    <?php endforeach; ?>
+
+    <!-- Ad banner slot -->
+    <div class="ad-banner">
+      <div class="ad-copy">
+        <span class="ad-big"><?php esc_html_e( 'Black Friday', 'theblotted' ); ?></span>
+        <span class="ad-sale"><?php esc_html_e( 'Sale', 'theblotted' ); ?></span>
+        <span class="ad-sub"><?php esc_html_e( 'Limited Time Offer', 'theblotted' ); ?></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MOBILE: active slide title above hero image -->
+<div class="mobile-slide-header" id="mobile-slide-header">
+  <?php if ( ! empty( $slider_posts ) ) :
+      $first_slide = $slider_posts[0]; ?>
+  <h2 id="mob-title"><?php echo esc_html( get_the_title( $first_slide ) ); ?></h2>
+  <p id="mob-desc"><?php echo theblotted_home_excerpt( $first_slide, 25 ); ?></p>
+  <?php endif; ?>
+</div>
+
+<!-- HERO SLIDER (full bleed, in page flow) -->
+<div class="hero-wrap">
+  <div class="hero-slider" id="hero-slider">
+
+    <?php foreach ( $slider_posts as $idx => $slide_post ) :
+        $slide_img   = get_the_post_thumbnail_url( $slide_post->ID, 'full' );
+        $slide_title = get_the_title( $slide_post );
+        $slide_desc  = wp_trim_words( wp_strip_all_tags( get_the_excerpt( $slide_post ) ?: get_the_content( null, false, $slide_post ) ), 25, '…' );
+        $slide_class = $idx === 0 ? 'slide active' : 'slide';
+        $bg_class    = 'slide-bg-' . ( ( $idx % 3 ) + 1 );
+    ?>
+    <div class="<?php echo esc_attr( $slide_class ); ?>"
+         data-title="<?php echo esc_attr( $slide_title ); ?>"
+         data-desc="<?php echo esc_attr( $slide_desc ); ?>">
+      <?php if ( $slide_img ) : ?>
+        <img class="slide-bg" src="<?php echo esc_url( $slide_img ); ?>" alt="<?php echo esc_attr( $slide_title ); ?>" />
+      <?php else : ?>
+        <div class="slide-bg <?php echo esc_attr( $bg_class ); ?>"></div>
+      <?php endif; ?>
+      <div class="slide-overlay"></div>
+      <a href="<?php echo esc_url( get_permalink( $slide_post ) ); ?>" class="slide-content">
+        <h1><?php echo esc_html( $slide_title ); ?></h1>
+        <p><?php echo esc_html( $slide_desc ); ?></p>
+      </a>
+    </div>
+    <?php endforeach; ?>
+
+    <button class="slide-arrow prev" onclick="changeSlide(-1)" aria-label="<?php esc_attr_e( 'Previous slide', 'theblotted' ); ?>">&#8249;</button>
+    <button class="slide-arrow next" onclick="changeSlide(1)" aria-label="<?php esc_attr_e( 'Next slide', 'theblotted' ); ?>">&#8250;</button>
+
+  </div><!-- /hero-slider -->
+
+  <!-- MOBILE: slide title + desc below image -->
+  <div class="mobile-slide-footer" id="mob-footer">
+    <?php if ( ! empty( $slider_posts ) ) : ?>
+    <h2 id="mob-footer-title"><?php echo esc_html( get_the_title( $slider_posts[0] ) ); ?></h2>
+    <p id="mob-footer-desc"><?php echo theblotted_home_excerpt( $slider_posts[0], 25 ); ?></p>
+    <?php endif; ?>
+  </div>
+</div><!-- /hero-wrap -->
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN PAGE CONTENT
+══════════════════════════════════════════════════════ -->
+<main id="main-content">
+
+<?php
+// ── Trending posts: 5 (1 big + 2 + 2) ──
+$trending_query = new WP_Query( [
+    'posts_per_page'      => 5,
+    'post__not_in'        => $rendered_post_ids,
+    'ignore_sticky_posts' => 1,
+    'orderby'             => 'date',
+    'order'               => 'DESC',
+] );
+$trending_posts = $trending_query->posts;
+wp_reset_postdata();
+foreach ( $trending_posts as $tp ) {
+    $rendered_post_ids[] = $tp->ID;
+}
+$trend_big   = isset( $trending_posts[0] ) ? $trending_posts[0] : null;
+$trend_mid   = array_slice( $trending_posts, 1, 2 );
+$trend_right = array_slice( $trending_posts, 3, 2 );
+?>
+
+  <!-- MOBILE PRE-HERO CARDS (stacked, in page flow) -->
+  <div class="mobile-pre-hero">
+    <?php foreach ( array_slice( $prehero_posts, 0, 2 ) as $mob_post ) :
+        $mob_cats  = get_the_category( $mob_post->ID );
+        $mob_label = $mob_cats ? $mob_cats[0]->name : '';
+        $mob_thumb = get_the_post_thumbnail_url( $mob_post->ID, 'thumbnail' );
+    ?>
+    <div class="mobile-pre-hero-card">
+      <a href="<?php echo esc_url( get_permalink( $mob_post ) ); ?>" class="thumb">
+        <?php if ( $mob_thumb ) : ?>
+          <img class="ph" src="<?php echo esc_url( $mob_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $mob_post ) ); ?>" />
+        <?php else : ?>
+          <div class="ph ph-1"></div>
+        <?php endif; ?>
+      </a>
+      <div class="text">
+        <span class="topic-label"><?php echo esc_html( $mob_label ); ?></span>
+        <a href="<?php echo esc_url( get_permalink( $mob_post ) ); ?>" class="post-title"><?php echo esc_html( get_the_title( $mob_post ) ); ?></a>
+        <div class="post-author"><?php echo esc_html( get_the_author_meta( 'display_name', $mob_post->post_author ) ); ?></div>
+      </div>
+    </div>
+    <?php endforeach; ?>
+    <?php if ( $trend_big ) :
+        $mob3_cats  = get_the_category( $trend_big->ID );
+        $mob3_label = $mob3_cats ? $mob3_cats[0]->name : '';
+        $mob3_thumb = get_the_post_thumbnail_url( $trend_big->ID, 'thumbnail' );
+    ?>
+    <div class="mobile-pre-hero-card">
+      <a href="<?php echo esc_url( get_permalink( $trend_big ) ); ?>" class="thumb">
+        <?php if ( $mob3_thumb ) : ?>
+          <img class="ph" src="<?php echo esc_url( $mob3_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $trend_big ) ); ?>" />
+        <?php else : ?>
+          <div class="ph ph-3"></div>
+        <?php endif; ?>
+      </a>
+      <div class="text">
+        <span class="topic-label"><?php echo esc_html( $mob3_label ); ?></span>
+        <a href="<?php echo esc_url( get_permalink( $trend_big ) ); ?>" class="post-title"><?php echo esc_html( get_the_title( $trend_big ) ); ?></a>
+        <div class="post-author"><?php echo esc_html( get_the_author_meta( 'display_name', $trend_big->post_author ) ); ?></div>
+      </div>
+    </div>
+    <?php endif; ?>
+  </div><!-- /mobile-pre-hero -->
+
+  <div class="main-inner">
+
+    <!-- Slider pagination dots -->
+    <div class="slider-dots" id="slider-dots">
+      <?php foreach ( $slider_posts as $dot_idx => $dot_post ) : ?>
+      <button class="dot <?php echo $dot_idx === 0 ? 'active' : ''; ?>" onclick="goToSlide(<?php echo $dot_idx; ?>)"></button>
+      <?php endforeach; ?>
+    </div>
+
+    <hr class="section-divider"/>
+
+    <!-- ── TRENDING ── -->
+    <?php if ( $trend_big ) : ?>
+    <section class="content-section">
+      <div class="section-header">
+        <h2 class="section-label"><?php esc_html_e( 'Trending', 'theblotted' ); ?></h2>
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="see-more"><?php esc_html_e( 'SEE MORE', 'theblotted' ); ?> &rsaquo;</a>
+      </div>
+
+      <div class="trending-grid">
+
+        <!-- BIG CARD — col 1 -->
+        <?php
+        $tb_cats  = get_the_category( $trend_big->ID );
+        $tb_label = $tb_cats ? $tb_cats[0]->name : '';
+        $tb_thumb = get_the_post_thumbnail_url( $trend_big->ID, 'large' );
+        ?>
+        <article class="big-card">
+          <a href="<?php echo esc_url( get_permalink( $trend_big ) ); ?>" class="card-img tall">
+            <?php if ( $tb_thumb ) : ?>
+              <img class="ph" src="<?php echo esc_url( $tb_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $trend_big ) ); ?>" />
+            <?php else : ?>
+              <div class="ph ph-dark1"></div>
+            <?php endif; ?>
+          </a>
+          <div class="card-body">
+            <div class="card-topic"><?php echo esc_html( $tb_label ); ?></div>
+            <h3 class="card-title"><a href="<?php echo esc_url( get_permalink( $trend_big ) ); ?>"><?php echo esc_html( get_the_title( $trend_big ) ); ?></a></h3>
+            <p class="card-desc"><?php echo theblotted_home_excerpt( $trend_big, 22 ); ?></p>
+            <div class="card-meta"><?php echo esc_html( get_the_date( 'F j', $trend_big ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $trend_big->post_author ) ); ?></div>
+          </div>
+        </article>
+
+        <!-- MIDDLE COL — col 2 (posts 2 & 3) -->
+        <div class="stacked-col">
+          <?php foreach ( $trend_mid as $tm_post ) :
+              $tm_cats  = get_the_category( $tm_post->ID );
+              $tm_label = $tm_cats ? $tm_cats[0]->name : '';
+              $tm_thumb = get_the_post_thumbnail_url( $tm_post->ID, 'medium' );
+          ?>
+          <article class="small-card">
+            <a href="<?php echo esc_url( get_permalink( $tm_post ) ); ?>" class="card-img medium">
+              <?php if ( $tm_thumb ) : ?>
+                <img class="ph" src="<?php echo esc_url( $tm_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $tm_post ) ); ?>" />
+              <?php else : ?>
+                <div class="ph ph-red2"></div>
+              <?php endif; ?>
+            </a>
+            <div class="card-body">
+              <div class="card-topic"><?php echo esc_html( $tm_label ); ?></div>
+              <h3 class="card-title"><a href="<?php echo esc_url( get_permalink( $tm_post ) ); ?>"><?php echo esc_html( get_the_title( $tm_post ) ); ?></a></h3>
+              <p class="card-desc"><?php echo theblotted_home_excerpt( $tm_post, 18 ); ?></p>
+              <div class="card-meta"><?php echo esc_html( get_the_date( 'F j', $tm_post ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $tm_post->post_author ) ); ?></div>
+            </div>
+          </article>
+          <?php endforeach; ?>
+        </div>
+
+        <!-- RIGHT COL — col 3 (posts 4 & 5) -->
+        <div class="stacked-col">
+          <?php foreach ( $trend_right as $tr_post ) :
+              $tr_cats  = get_the_category( $tr_post->ID );
+              $tr_label = $tr_cats ? $tr_cats[0]->name : '';
+              $tr_thumb = get_the_post_thumbnail_url( $tr_post->ID, 'medium' );
+          ?>
+          <article class="small-card">
+            <a href="<?php echo esc_url( get_permalink( $tr_post ) ); ?>" class="card-img medium">
+              <?php if ( $tr_thumb ) : ?>
+                <img class="ph" src="<?php echo esc_url( $tr_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $tr_post ) ); ?>" />
+              <?php else : ?>
+                <div class="ph ph-green3"></div>
+              <?php endif; ?>
+            </a>
+            <div class="card-body">
+              <div class="card-topic"><?php echo esc_html( $tr_label ); ?></div>
+              <h3 class="card-title"><a href="<?php echo esc_url( get_permalink( $tr_post ) ); ?>"><?php echo esc_html( get_the_title( $tr_post ) ); ?></a></h3>
+              <p class="card-desc"><?php echo theblotted_home_excerpt( $tr_post, 18 ); ?></p>
+              <div class="card-meta"><?php echo esc_html( get_the_date( 'F j', $tr_post ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $tr_post->post_author ) ); ?></div>
+            </div>
+          </article>
+          <?php endforeach; ?>
+        </div>
+
+      </div><!-- /trending-grid -->
     </section>
-    <hr class="vector" />
-    <section class="popular-container">
-      <div class="nav-link">
-        <h3>POPULAR</h3>
-        <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-          <h3>SEE MORE</h3>
-          <img src="<?php echo $next_link_img; ?>" alt="" />
-        </a>
-      </div>
-      <?php
-        $popular_ids = function_exists( 'wpp_get_ids' )
-        ? wpp_get_ids(
-            [
+    <?php endif; ?>
+
+    <hr class="section-divider"/>
+
+    <!-- ── POPULAR ── -->
+    <?php
+    $popular_ids = function_exists( 'wpp_get_ids' )
+        ? wpp_get_ids( [
             'limit'         => 5,
             'range'         => 'custom',
             'time_unit'     => 'day',
             'time_quantity' => 14,
             'post_type'     => 'post',
             'order_by'      => 'views',
-            ]
-        )
+        ] )
         : [];
-        $popular_posts = [];
 
-        if ( ! empty( $popular_ids ) ) {
-            $popular_query = new WP_Query(
-                [
-                'post_type'      => 'post',
-                'post__in'       => $popular_ids,
-                'orderby'        => 'post__in',
-                'posts_per_page' => count( $popular_ids ),
-                ]
-            );
-            $popular_posts = $popular_query->posts;
-            wp_reset_postdata();
-        }
-
-        $popular_hero         = ! empty( $popular_posts ) ? array_shift( $popular_posts ) : null;
-        $popular_default_hero = THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/background.png';
-        $popular_default_thumb = THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/image 12.png';
-        ?>
-      <?php if ( $popular_hero ) : ?>
-            <?php
-            $hero_image      = get_the_post_thumbnail_url( $popular_hero, 'full' );
-            $hero_image      = $hero_image ? $hero_image : $popular_default_hero;
-            $hero_categories = get_the_category( $popular_hero->ID );
-            $hero_category   = ! empty( $hero_categories ) ? $hero_categories[0]->name : 'Popular';
-            $hero_excerpt    = get_the_excerpt( $popular_hero );
-            if ( $hero_excerpt === '' ) {
-                $hero_excerpt = get_the_content( null, false, $popular_hero );
-            }
-            ?>
-        <a class="popular-hero-link" href="<?php echo esc_url( get_permalink( $popular_hero ) ); ?>">
-          <div
-            class="image-background"
-            style="
-                  background-image: linear-gradient(
-                      1.76deg,
-                      #251d14 1.49%,
-                      rgba(37, 29, 20, 0) 99.95%
-                    ),
-                    url('<?php echo esc_url( $hero_image ); ?>');
-                  background-size: cover;
-                  background-position: center;
-                ">
-            <div class="text-container">
-              <span class="author"><?php echo esc_html( $hero_category ); ?></span>
-              <h2 class="title">
-                <span><?php echo esc_html( get_the_title( $popular_hero ) ); ?></span>
-              </h2>
-              <p class="discription">
-                <?php echo esc_html( wp_trim_words( wp_strip_all_tags( $hero_excerpt ), 24, '…' ) ); ?>
-              </p>
-              <span class="author"><?php echo esc_html( get_the_date( 'F j', $popular_hero ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $popular_hero->post_author ) ); ?></span>
-            </div>
-          </div>
-        </a>
-      <?php endif; ?>
-      <?php if ( ! empty( $popular_posts ) ) : ?>
-        <div class="popular-section">
-          <div class="popular-cards" id="popular-cards">
-            <?php foreach ( array_slice( $popular_posts, 0, 4 ) as $popular_post ) : ?>
-                <?php
-                $card_excerpt = get_the_excerpt( $popular_post );
-                if ( $card_excerpt === '' ) {
-                    $card_excerpt = get_the_content( null, false, $popular_post );
-                }
-                $card_image = get_the_post_thumbnail_url( $popular_post, 'medium' );
-                $card_image = $card_image ? $card_image : $popular_default_thumb;
-                ?>
-              <div class="card-container">
-                <div class="card-img">
-                  <a href="<?php echo esc_url( get_permalink( $popular_post ) ); ?>">
-                    <img src="<?php echo esc_url( $card_image ); ?>" alt="<?php echo esc_attr( get_the_title( $popular_post ) ); ?>" />
-                  </a>
-                </div>
-                <div class="text-container">
-                  <h2 class="title">
-                    <a href="<?php echo esc_url( get_permalink( $popular_post ) ); ?>">
-                      <?php echo esc_html( get_the_title( $popular_post ) ); ?>
-                    </a>
-                  </h2>
-                  <p class="discription">
-                    <?php echo esc_html( wp_trim_words( wp_strip_all_tags( $card_excerpt ), 18, '…' ) ); ?>
-                  </p>
-                  <span class="author"><?php echo esc_html( get_the_date( 'F j', $popular_post ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $popular_post->post_author ) ); ?></span>
-                </div>
-              </div>
-            <?php endforeach; ?>
-          </div>
-        </div>
-      <?php endif; ?>
-    </section>
-
-    <!-- ads -->
-    <hr class="vector" />
-    <?php
-    $home_mid_ad = theblotted_acf_img_url(
-        'home_mid_banner_ad',
-        theblotted_get_settings_page_id(),
-        esc_url( THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/ads-image.jpg' )
-    );
-    ?>
-    <div
-      class="image-background img-height"
-      style="
-              background-image: url('<?php echo $home_mid_ad; ?>');
-              background-blend-mode: multiply;
-              background-size: cover;
-              background-position: center;
-            "></div>
-    <hr class="vector" />
-
-    <?php
-    // Helper: render a standard 4-card category section
-    $theblotted_home_sections = [
-        [
-            'slug'  => 'issues',
-            'label' => 'Issues',
-            'count' => 3,
-            'ad'    => true,
-        ],
-        [
-            'slug'  => 'literature',
-            'label' => 'Literature',
-            'count' => 4,
-            'ad'    => false,
-        ],
-        [
-            'slug'  => 'pop-of-culture',
-            'label' => 'Pop of Culture',
-            'count' => 4,
-            'ad'    => false,
-        ],
-        [
-            'slug'  => 'lifestyle',
-            'label' => 'Lifestyle',
-            'count' => 4,
-            'ad'    => false,
-        ],
-        [
-            'slug'  => 'politics',
-            'label' => 'Politics',
-            'count' => 4,
-            'ad'    => false,
-        ],
-    ];
-
-    foreach ( $theblotted_home_sections as $section ) :
-        $s_term  = get_term_by( 'slug', $section['slug'], 'category' );
-        $s_link  = $s_term ? get_term_link( $s_term ) : home_url( '/' );
-        $s_query = new WP_Query(
-            [
-            'category_name'       => $section['slug'],
-            'posts_per_page'      => $section['count'],
+    if ( ! empty( $popular_ids ) ) {
+        $pop_query = new WP_Query( [
+            'post_type'      => 'post',
+            'post__in'       => $popular_ids,
+            'orderby'        => 'post__in',
+            'posts_per_page' => count( $popular_ids ),
+        ] );
+        $pop_posts = $pop_query->posts;
+        wp_reset_postdata();
+    } else {
+        $pop_query = new WP_Query( [
+            'posts_per_page'      => 5,
             'post__not_in'        => $rendered_post_ids,
             'ignore_sticky_posts' => 1,
-            'orderby'             => 'date',
+            'orderby'             => 'comment_count',
             'order'               => 'DESC',
-            ]
-        );
-        if ( ! $s_query->have_posts() ) {
-            wp_reset_postdata();
-            continue;
-        }
-    ?>
-    <section class="card-wrap">
-      <div class="nav-link">
-        <h3><?php echo esc_html( $section['label'] ); ?></h3>
-        <a href="<?php echo esc_url( $s_link ); ?>">
-          <h3>SEE MORE</h3>
-          <img src="<?php echo $next_link_img; ?>" alt="" />
-        </a>
-      </div>
-      <div class="card-section">
-        <div class="cards-grid">
-          <?php
-          $s_post_index = 0;
-          while ( $s_query->have_posts() ) :
-              $s_query->the_post();
-              $s_post_index++;
-              // Insert ad slot after first post for "issues" section
-              if ( $section['ad'] && $s_post_index === 2 ) :
-          ?>
-          <div class="image">
-            <img src="<?php echo theblotted_acf_img_url( 'home_issues_section_ad', theblotted_get_settings_page_id(), esc_url( THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/friday-sales.png' ) ); ?>" alt="advertisement" />
-          </div>
-          <?php endif; ?>
-          <div class="card-container">
-            <div class="card-img">
-              <?php if ( has_post_thumbnail() ) : ?>
-                <a href="<?php echo esc_url( get_permalink() ); ?>">
-                  <?php the_post_thumbnail( 'medium', [ 'alt' => esc_attr( get_the_title() ) ] ); ?>
-                </a>
-              <?php endif; ?>
-            </div>
-            <div class="text-container">
-              <h2 class="title">
-                <a href="<?php echo esc_url( get_permalink() ); ?>"><?php the_title(); ?></a>
-              </h2>
-              <p class="discription">
-                <?php
-                $s_excerpt = get_the_excerpt();
-                if ( $s_excerpt === '' ) {
-                    $s_excerpt = get_the_content();
-                }
-                echo esc_html( wp_trim_words( wp_strip_all_tags( $s_excerpt ), 20, '…' ) );
-                ?>
-              </p>
-              <span class="author">
-                <?php echo esc_html( get_the_date( 'F j' ) ); ?> | <?php echo esc_html( get_the_author() ); ?>
-              </span>
-            </div>
-          </div>
-          <?php endwhile; wp_reset_postdata(); ?>
-        </div>
-      </div>
-    </section>
-    <hr class="vector" />
-    <?php endforeach; ?>
-
-    <!-- Cartoons and Crosswords -->
-    <?php
-    $cartoons_term = get_term_by( 'slug', 'cartoons-crosswords', 'category' );
-    if ( ! $cartoons_term ) {
-        $cartoons_term = get_term_by( 'slug', 'cartoons', 'category' );
+        ] );
+        $pop_posts = $pop_query->posts;
+        wp_reset_postdata();
     }
-    $cartoons_link = $cartoons_term ? get_term_link( $cartoons_term ) : home_url( '/' );
 
-    $cartoons_query = new WP_Query(
-        [
-        'posts_per_page'      => 5,
+    $pop_hero = ! empty( $pop_posts ) ? array_shift( $pop_posts ) : null;
+    $pop_quad = array_slice( $pop_posts, 0, 4 );
+    if ( $pop_hero ) {
+        $rendered_post_ids[] = $pop_hero->ID;
+    }
+    foreach ( $pop_quad as $pp ) {
+        $rendered_post_ids[] = $pp->ID;
+    }
+    ?>
+    <?php if ( $pop_hero ) : ?>
+    <section class="content-section">
+      <div class="section-header">
+        <h2 class="section-label"><?php esc_html_e( 'Popular', 'theblotted' ); ?></h2>
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="see-more"><?php esc_html_e( 'SEE MORE', 'theblotted' ); ?> &rsaquo;</a>
+      </div>
+
+      <?php
+      $pop_cats  = get_the_category( $pop_hero->ID );
+      $pop_label = $pop_cats ? $pop_cats[0]->name : '';
+      $pop_thumb = get_the_post_thumbnail_url( $pop_hero->ID, 'full' );
+      ?>
+      <a href="<?php echo esc_url( get_permalink( $pop_hero ) ); ?>" class="popular-hero-card">
+        <div class="card-img popular-img">
+          <?php if ( $pop_thumb ) : ?>
+            <img class="ph" src="<?php echo esc_url( $pop_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $pop_hero ) ); ?>" />
+          <?php else : ?>
+            <div class="ph ph-city"></div>
+          <?php endif; ?>
+        </div>
+        <div class="popular-overlay">
+          <div class="card-topic light"><?php echo esc_html( $pop_label ); ?></div>
+          <h3 class="card-title light"><?php echo esc_html( get_the_title( $pop_hero ) ); ?></h3>
+          <p class="popular-desc"><?php echo theblotted_home_excerpt( $pop_hero, 24 ); ?></p>
+          <div class="card-meta light"><?php echo esc_html( get_the_date( 'F j', $pop_hero ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $pop_hero->post_author ) ); ?></div>
+        </div>
+      </a>
+
+      <?php if ( ! empty( $pop_quad ) ) : ?>
+      <div class="quad-grid">
+        <?php foreach ( $pop_quad as $pq_post ) :
+            $pq_cats  = get_the_category( $pq_post->ID );
+            $pq_label = $pq_cats ? $pq_cats[0]->name : '';
+            $pq_thumb = get_the_post_thumbnail_url( $pq_post->ID, 'medium' );
+        ?>
+        <article class="quad-card">
+          <a href="<?php echo esc_url( get_permalink( $pq_post ) ); ?>" class="card-img quad-img">
+            <?php if ( $pq_thumb ) : ?>
+              <img class="ph" src="<?php echo esc_url( $pq_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $pq_post ) ); ?>" />
+            <?php else : ?>
+              <div class="ph ph-dark2"></div>
+            <?php endif; ?>
+          </a>
+          <div class="card-body">
+            <div class="card-topic"><?php echo esc_html( $pq_label ); ?></div>
+            <h3 class="card-title"><a href="<?php echo esc_url( get_permalink( $pq_post ) ); ?>"><?php echo esc_html( get_the_title( $pq_post ) ); ?></a></h3>
+            <p class="card-desc"><?php echo theblotted_home_excerpt( $pq_post, 18 ); ?></p>
+            <div class="card-meta"><?php echo esc_html( get_the_date( 'F j', $pq_post ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $pq_post->post_author ) ); ?></div>
+          </div>
+        </article>
+        <?php endforeach; ?>
+      </div>
+      <?php endif; ?>
+    </section>
+
+    <hr class="section-divider"/>
+    <?php endif; ?>
+
+    <!-- ── WEEKLY ARTICLES ── -->
+    <?php
+    $weekly_query = new WP_Query( [
+        'posts_per_page'      => 4,
         'post__not_in'        => $rendered_post_ids,
         'ignore_sticky_posts' => 1,
         'orderby'             => 'date',
         'order'               => 'DESC',
-        'tax_query'           => [
-            'relation' => 'OR',
-            [
-                'taxonomy' => 'category',
-                'field'    => 'slug',
-                'terms'    => 'cartoons',
-            ],
-            [
-                'taxonomy' => 'category',
-                'field'    => 'slug',
-                'terms'    => 'crosswords',
-            ],
-            [
-                'taxonomy' => 'category',
-                'field'    => 'slug',
-                'terms'    => 'cartoons-crosswords',
-            ],
-        ],
-        ]
-    );
-    $cartoons_posts = $cartoons_query->posts;
+    ] );
+    $weekly_posts = $weekly_query->posts;
     wp_reset_postdata();
-    $cartoons_main   = isset( $cartoons_posts[0] ) ? $cartoons_posts[0] : null;
-    $cartoons_side   = array_slice( $cartoons_posts, 1, 4 );
+    foreach ( $weekly_posts as $wa ) {
+        $rendered_post_ids[] = $wa->ID;
+    }
     ?>
-    <?php if ( $cartoons_main ) : ?>
-    <section class="cartoon-container">
-      <div class="nav-link">
-        <h3>Cartoons and Crosswords</h3>
-        <a href="<?php echo esc_url( $cartoons_link ); ?>">
-          <h3>SEE MORE</h3>
-          <img src="<?php echo $next_link_img; ?>" alt="" />
-        </a>
+    <?php if ( ! empty( $weekly_posts ) ) : ?>
+    <section class="content-section">
+      <div class="section-header">
+        <h2 class="section-label"><?php esc_html_e( 'Weekly Articles', 'theblotted' ); ?></h2>
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="see-more"><?php esc_html_e( 'SEE MORE', 'theblotted' ); ?> &rsaquo;</a>
       </div>
-      <div class="cartoon-cards">
-        <!-- first image hidden on mobile -->
-        <div class="first-cartoon-card">
-          <div class="card-cartoon-container">
-            <div class="card-img">
-              <?php if ( has_post_thumbnail( $cartoons_main ) ) : ?>
-                <a href="<?php echo esc_url( get_permalink( $cartoons_main ) ); ?>">
-                  <?php echo get_the_post_thumbnail( $cartoons_main, 'large', [ 'alt' => esc_attr( get_the_title( $cartoons_main ) ) ] ); ?>
-                </a>
-              <?php endif; ?>
-            </div>
-            <div class="text-container">
-              <h2 class="title">
-                <a href="<?php echo esc_url( get_permalink( $cartoons_main ) ); ?>">
-                  <?php echo esc_html( get_the_title( $cartoons_main ) ); ?>
-                </a>
-              </h2>
-              <p class="discription">
-                <?php
-                $c_excerpt = get_the_excerpt( $cartoons_main );
-                if ( $c_excerpt === '' ) $c_excerpt = get_the_content( null, false, $cartoons_main );
-                echo esc_html( wp_trim_words( wp_strip_all_tags( $c_excerpt ), 20, '…' ) );
-                ?>
-              </p>
-              <span class="author">
-                <?php echo esc_html( get_the_date( 'F j', $cartoons_main ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $cartoons_main->post_author ) ); ?>
-              </span>
-            </div>
+      <div class="quad-grid">
+        <?php foreach ( $weekly_posts as $wa_post ) :
+            $wa_cats  = get_the_category( $wa_post->ID );
+            $wa_label = $wa_cats ? $wa_cats[0]->name : '';
+            $wa_thumb = get_the_post_thumbnail_url( $wa_post->ID, 'medium' );
+        ?>
+        <article class="quad-card">
+          <a href="<?php echo esc_url( get_permalink( $wa_post ) ); ?>" class="card-img quad-img">
+            <?php if ( $wa_thumb ) : ?>
+              <img class="ph" src="<?php echo esc_url( $wa_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $wa_post ) ); ?>" />
+            <?php else : ?>
+              <div class="ph ph-1"></div>
+            <?php endif; ?>
+          </a>
+          <div class="card-body">
+            <div class="card-topic"><?php echo esc_html( $wa_label ); ?></div>
+            <h3 class="card-title"><a href="<?php echo esc_url( get_permalink( $wa_post ) ); ?>"><?php echo esc_html( get_the_title( $wa_post ) ); ?></a></h3>
+            <p class="card-desc"><?php echo theblotted_home_excerpt( $wa_post, 18 ); ?></p>
+            <div class="card-meta"><?php echo esc_html( get_the_date( 'F j', $wa_post ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $wa_post->post_author ) ); ?></div>
           </div>
-        </div>
-        <!-- side cards -->
-        <div class="second-card">
-          <?php
-          $cartoons_chunk1 = array_slice( $cartoons_side, 0, 2 );
-          $cartoons_chunk2 = array_slice( $cartoons_side, 2, 2 );
-          foreach ( [ $cartoons_chunk1, $cartoons_chunk2 ] as $chunk ) :
-          ?>
-          <div class="first-cartoon-child">
-            <?php foreach ( $chunk as $idx => $c_post ) : ?>
-            <div class="card-cartoon-container <?php echo $idx === 0 ? 'card-1' : 'card-2'; ?>">
-              <div class="card-img">
-                <?php if ( has_post_thumbnail( $c_post ) ) : ?>
-                  <a href="<?php echo esc_url( get_permalink( $c_post ) ); ?>">
-                    <?php echo get_the_post_thumbnail( $c_post, 'medium', [ 'alt' => esc_attr( get_the_title( $c_post ) ) ] ); ?>
-                  </a>
-                <?php endif; ?>
-              </div>
-              <div class="text-container">
-                <h2 class="title">
-                  <a href="<?php echo esc_url( get_permalink( $c_post ) ); ?>">
-                    <?php echo esc_html( get_the_title( $c_post ) ); ?>
-                  </a>
-                </h2>
-                <p class="discription">
-                  <?php
-                  $cs_excerpt = get_the_excerpt( $c_post );
-                  if ( $cs_excerpt === '' ) $cs_excerpt = get_the_content( null, false, $c_post );
-                  echo esc_html( wp_trim_words( wp_strip_all_tags( $cs_excerpt ), 15, '…' ) );
-                  ?>
-                </p>
-                <span class="author">
-                  <?php echo esc_html( get_the_date( 'F j', $c_post ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $c_post->post_author ) ); ?>
-                </span>
-              </div>
-            </div>
-            <?php endforeach; ?>
-          </div>
-          <?php endforeach; ?>
-        </div>
+        </article>
+        <?php endforeach; ?>
       </div>
     </section>
-    <hr class="vector" />
     <?php endif; ?>
-    <!-- Cartoons and Crosswords -->
 
-    <!-- Contributors -->
+  </div><!-- /main-inner -->
+
+  <!-- CATEGORY SECTIONS -->
+  <div class="main-inner">
+
     <?php
-    $contributors = get_users(
-        [
-        'role__in' => [ 'author', 'editor', 'administrator', 'contributor' ],
-        'number'   => 4,
-        'orderby'  => 'post_count',
-        'order'    => 'DESC',
-        ]
-    );
+    $home_sections = [
+        [ 'slug' => 'issues',         'label' => 'Issues',         'count' => 4 ],
+        [ 'slug' => 'literature',     'label' => 'Literature',     'count' => 4 ],
+        [ 'slug' => 'pop-of-culture', 'label' => 'Pop of Culture', 'count' => 4 ],
+        [ 'slug' => 'lifestyle',      'label' => 'Lifestyle',      'count' => 4 ],
+        [ 'slug' => 'comedy',         'label' => 'Comedy',         'count' => 4 ],
+    ];
+
+    foreach ( $home_sections as $hs ) :
+        $hs_term  = get_term_by( 'slug', $hs['slug'], 'category' );
+        $hs_link  = $hs_term ? get_term_link( $hs_term ) : home_url( '/' );
+        $hs_query = new WP_Query( [
+            'category_name'       => $hs['slug'],
+            'posts_per_page'      => $hs['count'],
+            'post__not_in'        => $rendered_post_ids,
+            'ignore_sticky_posts' => 1,
+            'orderby'             => 'date',
+            'order'               => 'DESC',
+        ] );
+        if ( ! $hs_query->have_posts() ) {
+            wp_reset_postdata();
+            continue;
+        }
+        $hs_posts = $hs_query->posts;
+        wp_reset_postdata();
+        foreach ( $hs_posts as $hp ) {
+            $rendered_post_ids[] = $hp->ID;
+        }
     ?>
-    <?php if ( ! empty( $contributors ) ) : ?>
-    <section class="card-wrap" style="margin-bottom: 30px;">
-      <div class="nav-link">
-        <h3>CONTRIBUTORS</h3>
+    <hr class="section-divider"/>
+    <section class="content-section">
+      <div class="section-header">
+        <h2 class="section-label"><?php echo esc_html( $hs['label'] ); ?></h2>
+        <a href="<?php echo esc_url( $hs_link ); ?>" class="see-more"><?php esc_html_e( 'SEE MORE', 'theblotted' ); ?> &rsaquo;</a>
       </div>
-      <div class="card-section">
-        <div class="cards-grid">
-          <?php foreach ( $contributors as $contributor ) : ?>
-          <div class="contributors">
-            <div>
-              <div class="contributor-image" style="width: 96px !important; height: 96px !important">
-                <?php echo get_avatar( $contributor->ID, 96, '', esc_attr( $contributor->display_name ) ); ?>
-              </div>
-            </div>
-            <div class="contributor-text-box">
-              <h2 class="name"><?php echo esc_html( $contributor->display_name ); ?></h2>
-              <p class="discription">
-                <?php
-                $bio = get_the_author_meta( 'description', $contributor->ID );
-                echo esc_html( wp_trim_words( $bio, 20, '…' ) );
-                ?>
-              </p>
-            </div>
+      <div class="cat-grid">
+        <?php foreach ( $hs_posts as $hs_post ) :
+            $hs_p_cats  = get_the_category( $hs_post->ID );
+            $hs_p_label = $hs_p_cats ? $hs_p_cats[0]->name : '';
+            $hs_p_thumb = get_the_post_thumbnail_url( $hs_post->ID, 'medium' );
+        ?>
+        <article class="cat-card">
+          <a href="<?php echo esc_url( get_permalink( $hs_post ) ); ?>" class="cat-img">
+            <?php if ( $hs_p_thumb ) : ?>
+              <img class="ph" src="<?php echo esc_url( $hs_p_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $hs_post ) ); ?>" />
+            <?php else : ?>
+              <div class="ph ph-dark1"></div>
+            <?php endif; ?>
+          </a>
+          <div class="card-body">
+            <div class="card-topic"><?php echo esc_html( $hs_p_label ); ?></div>
+            <h3 class="card-title"><a href="<?php echo esc_url( get_permalink( $hs_post ) ); ?>"><?php echo esc_html( get_the_title( $hs_post ) ); ?></a></h3>
+            <p class="card-desc"><?php echo theblotted_home_excerpt( $hs_post, 20 ); ?></p>
+            <div class="card-meta"><?php echo esc_html( get_the_date( 'F j', $hs_post ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $hs_post->post_author ) ); ?></div>
           </div>
-          <?php endforeach; ?>
-        </div>
+        </article>
+        <?php endforeach; ?>
       </div>
     </section>
-    <?php endif; ?>
-  </div>
-</main>
+    <?php endforeach; ?>
 
-<!-- Reusable Topic Card Template -->
-<template id="topic-card-template">
-  <div class="topic-cards">
-    <div class="card-image">
-      <img src="" alt="card-image" />
-    </div>
-    <div class="text-box">
-      <p class="card-topic"></p>
-      <h2 class="card-title"></h2>
-      <span class="card-author"></span>
-    </div>
-  </div>
-</template>
+    <!-- ── CARTOONS & CROSSWORDS ── -->
+    <?php
+    $cc_query = new WP_Query( [
+        'posts_per_page'      => 3,
+        'post__not_in'        => $rendered_post_ids,
+        'ignore_sticky_posts' => 1,
+        'orderby'             => 'date',
+        'order'               => 'DESC',
+        'tax_query'           => [ [
+            'relation' => 'OR',
+            [ 'taxonomy' => 'category', 'field' => 'slug', 'terms' => 'cartoons' ],
+            [ 'taxonomy' => 'category', 'field' => 'slug', 'terms' => 'crosswords' ],
+            [ 'taxonomy' => 'category', 'field' => 'slug', 'terms' => 'cartoons-crosswords' ],
+        ] ],
+    ] );
+    $cc_posts = $cc_query->posts;
+    wp_reset_postdata();
+
+    $cc_term  = get_term_by( 'slug', 'cartoons-crosswords', 'category' ) ?: get_term_by( 'slug', 'cartoons', 'category' );
+    $cc_link  = $cc_term ? get_term_link( $cc_term ) : home_url( '/' );
+    $cc_big   = ! empty( $cc_posts ) ? $cc_posts[0] : null;
+    $cc_right = array_slice( $cc_posts, 1, 2 );
+    ?>
+    <?php if ( $cc_big ) : ?>
+    <hr class="section-divider"/>
+    <section class="content-section">
+      <div class="section-header">
+        <h2 class="section-label"><?php esc_html_e( 'Cartoons &amp; Crosswords', 'theblotted' ); ?></h2>
+        <a href="<?php echo esc_url( $cc_link ); ?>" class="see-more"><?php esc_html_e( 'SEE MORE', 'theblotted' ); ?> &rsaquo;</a>
+      </div>
+
+      <div class="cc-grid">
+        <?php
+        $ccb_cats  = get_the_category( $cc_big->ID );
+        $ccb_label = $ccb_cats ? $ccb_cats[0]->name : '';
+        $ccb_thumb = get_the_post_thumbnail_url( $cc_big->ID, 'large' );
+        ?>
+        <article class="cc-big">
+          <a href="<?php echo esc_url( get_permalink( $cc_big ) ); ?>" class="cc-big-img">
+            <?php if ( $ccb_thumb ) : ?>
+              <img class="ph" src="<?php echo esc_url( $ccb_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $cc_big ) ); ?>" />
+            <?php else : ?>
+              <div class="ph ph-dark1"></div>
+            <?php endif; ?>
+          </a>
+          <div class="card-body">
+            <div class="card-topic"><?php echo esc_html( $ccb_label ); ?></div>
+            <h3 class="card-title"><a href="<?php echo esc_url( get_permalink( $cc_big ) ); ?>"><?php echo esc_html( get_the_title( $cc_big ) ); ?></a></h3>
+            <p class="card-desc"><?php echo theblotted_home_excerpt( $cc_big, 20 ); ?></p>
+            <div class="card-meta"><?php echo esc_html( get_the_date( 'F j', $cc_big ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $cc_big->post_author ) ); ?></div>
+          </div>
+        </article>
+
+        <?php if ( ! empty( $cc_right ) ) : ?>
+        <div class="cc-right">
+          <?php foreach ( $cc_right as $cc_r ) :
+              $ccr_cats  = get_the_category( $cc_r->ID );
+              $ccr_label = $ccr_cats ? $ccr_cats[0]->name : '';
+              $ccr_thumb = get_the_post_thumbnail_url( $cc_r->ID, 'medium' );
+          ?>
+          <article class="cc-card">
+            <a href="<?php echo esc_url( get_permalink( $cc_r ) ); ?>" class="cc-img">
+              <?php if ( $ccr_thumb ) : ?>
+                <img class="ph" src="<?php echo esc_url( $ccr_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $cc_r ) ); ?>" />
+              <?php else : ?>
+                <div class="ph ph-2"></div>
+              <?php endif; ?>
+            </a>
+            <div class="card-body">
+              <div class="card-topic"><?php echo esc_html( $ccr_label ); ?></div>
+              <h3 class="card-title"><a href="<?php echo esc_url( get_permalink( $cc_r ) ); ?>"><?php echo esc_html( get_the_title( $cc_r ) ); ?></a></h3>
+              <p class="card-desc"><?php echo theblotted_home_excerpt( $cc_r, 15 ); ?></p>
+              <div class="card-meta"><?php echo esc_html( get_the_date( 'F j', $cc_r ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $cc_r->post_author ) ); ?></div>
+            </div>
+          </article>
+          <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+
+      </div><!-- /cc-grid -->
+    </section>
+    <?php endif; ?>
+
+  </div><!-- /category sections inner -->
+
+</main><!-- /#main-content -->
 
 <!-- Newsletter -->
-<div
-  class="image-background"
-  style="
-          background-color: #8e8585;
-          padding-top: 100px;
-          padding-bottom: 100px;
-          width: 100%;
-        ">
-  <div class="email-box" style="width: 273px">
-    <h2 style="font-size: 24px">
-      <?php esc_html_e( 'Subscribe to our newsletter to get weekly updates to your inbox.', 'theblotted' ); ?>
-    </h2>
-    <div class="email-container">
-      <form action="#" method="post">
-        <?php wp_nonce_field( 'theblotted_newsletter', 'newsletter_nonce' ); ?>
-        <input
-          type="email"
-          name="newsletter-email"
-          autocomplete="email"
-          placeholder="<?php esc_attr_e( 'Email', 'theblotted' ); ?>"
-          required />
-        <button type="submit"><?php esc_html_e( 'Subscribe', 'theblotted' ); ?></button>
-      </form>
-    </div>
+<div class="newsletter-banner">
+  <p><?php esc_html_e( 'Subscribe to our newsletter to get weekly updates to your inbox.', 'theblotted' ); ?></p>
+  <div class="newsletter-form">
+    <form action="#" method="post">
+      <?php wp_nonce_field( 'theblotted_newsletter', 'newsletter_nonce' ); ?>
+      <input type="email" name="newsletter-email" autocomplete="email"
+             placeholder="<?php esc_attr_e( 'Email', 'theblotted' ); ?>"
+             aria-label="<?php esc_attr_e( 'Email address', 'theblotted' ); ?>"
+             required />
+      <button type="submit"><?php esc_html_e( 'Subscribe', 'theblotted' ); ?></button>
+    </form>
   </div>
 </div>

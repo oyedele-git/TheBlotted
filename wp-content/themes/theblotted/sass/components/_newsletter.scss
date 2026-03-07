@@ -1,0 +1,75 @@
+/* ============================================================
+   NEWSLETTER / EMAIL SIGNUP
+   Supports both class conventions: .newsletter-banner (header-v2/article)
+   and .newsletter (about/category).
+   ============================================================ */
+
+.newsletter-banner,
+.newsletter {
+  width: 100%;
+  background: #8c8479;
+  padding: 64px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.newsletter-banner p,
+.newsletter p {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 22px;
+  color: #fff;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 480px;
+  margin: 0;
+}
+
+/* Form wrapper — .newsletter-form (header-v2/article) or .nl-form (about/category) */
+.newsletter-form,
+.nl-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.newsletter-form input,
+.nl-form input {
+  width: 100%;
+  padding: 16px 18px;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.7);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.newsletter-form input::placeholder,
+.nl-form input::placeholder { color: rgba(255,255,255,0.65); }
+
+.newsletter-form input:focus,
+.nl-form input:focus { border-color: #fff; }
+
+.newsletter-form button,
+.nl-form button {
+  width: 100%;
+  padding: 16px;
+  background: #fff;
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-dark);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.newsletter-form button:hover,
+.nl-form button:hover { opacity: 0.85; }

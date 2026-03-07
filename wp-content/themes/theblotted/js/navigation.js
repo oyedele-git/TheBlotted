@@ -1,78 +1,48 @@
-// document.addEventListener('DOMContentLoaded', () => {
-//     const mainMenu = document.querySelector("#open1");
-//     const openMenu = document.querySelector("#openMenu");
-//     const closeMenu = document.querySelector("#closeMenu");
+/* ── Spacer height ── */
+function syncSpacer() {
+  document.getElementById('header-spacer').style.height =
+    document.getElementById('site-header').offsetHeight + 'px';
+}
+syncSpacer();
+window.addEventListener('resize', syncSpacer);
 
-//     openMenu.addEventListener('click', show);
-//     closeMenu.addEventListener('click', hide);
+/* ── Scroll hide / show header ── */
+let lastScrollY = window.scrollY;
+const header = document.getElementById('site-header');
 
-//     function show() {
-//         mainMenu.classList.add('menu-visible'); // Show menu
-//         openMenu.style.display = 'none';
-//         closeMenu.style.display = 'block';
-//     }
+window.addEventListener('scroll', function () {
+  const currentScrollY = window.scrollY;
 
-//     function hide() {
-//         mainMenu.classList.remove('menu-visible'); // Hide menu
-//         openMenu.style.display = 'block';
-//         closeMenu.style.display = 'none';
-//     }
+  if (currentScrollY <= 0) {
+    // At the very top — always show
+    header.classList.remove('hidden');
+    header.classList.remove('scrolled');
+  } else if (currentScrollY > lastScrollY + 4) {
+    // Scrolling DOWN — hide
+    header.classList.add('hidden');
+    header.classList.add('scrolled');
+    // Also close mobile menu if open
+    document.getElementById('mobile-nav').classList.remove('open');
+  } else if (currentScrollY < lastScrollY - 4) {
+    // Scrolling UP — show
+    header.classList.remove('hidden');
+    header.classList.add('scrolled');
+  }
 
-//     // Scroll event for logo swap (optional if you use logos)
-//     window.addEventListener('scroll', function () {
-//         const scrollY = window.scrollY;
-//         const firstIcon = document.getElementById('first-icon');
-//         const secondIcon = document.getElementById('second-icon');
+  lastScrollY = currentScrollY;
+});
 
-//         if (!firstIcon || !secondIcon) return;
+/* ── Close mobile nav on scroll past threshold ── */
+window.addEventListener('scroll', function () {
+  if (window.scrollY > 40) {
+    document.getElementById('mobile-nav').classList.remove('open');
+    syncSpacer();
+  }
+}, { passive: true });
 
-//         if (scrollY > 100) {
-//             firstIcon.style.display = 'none';
-//             secondIcon.style.display = 'inline-block';
-//         } else {
-//             firstIcon.style.display = 'inline-block';
-//             secondIcon.style.display = 'none';
-//         }
-//     });
-// });
-
-document.addEventListener('DOMContentLoaded', () => {
-    const mainMenu = document.querySelector("#open1");
-    const openMenu = document.querySelector("#openMenu");
-    const closeMenu = document.querySelector("#closeMenu");
-    const header = document.querySelector("header"); // 👈 add this
-
-    openMenu.addEventListener('click', show);
-    closeMenu.addEventListener('click', hide);
-
-    function show() {
-        mainMenu.classList.add('menu-visible');
-        header.classList.add('menu-open'); // 👈 add background
-        openMenu.style.display = 'none';
-        closeMenu.style.display = 'block';
-    }
-
-    function hide() {
-        mainMenu.classList.remove('menu-visible');
-        header.classList.remove('menu-open'); // 👈 remove background
-        openMenu.style.display = 'block';
-        closeMenu.style.display = 'none';
-    }
-
-    // Scroll event (unchanged)
-    window.addEventListener('scroll', function () {
-        const scrollY = window.scrollY;
-        const firstIcon = document.getElementById('first-icon');
-        const secondIcon = document.getElementById('second-icon');
-
-        if (!firstIcon || !secondIcon) return;
-
-        if (scrollY > 100) {
-            firstIcon.style.display = 'none';
-            secondIcon.style.display = 'inline-block';
-        } else {
-            firstIcon.style.display = 'inline-block';
-            secondIcon.style.display = 'none';
-        }
-    });
+/* ── Hamburger toggle ── */
+document.getElementById('hamburger-btn').addEventListener('click', function () {
+  const nav = document.getElementById('mobile-nav');
+  nav.classList.toggle('open');
+  syncSpacer();
 });
