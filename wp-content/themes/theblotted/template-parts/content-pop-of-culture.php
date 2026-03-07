@@ -1,9 +1,9 @@
 <?php
+/* Template part for Pop of Culture page */
 
 /**
- * Template part for Pop of Culture Page
- *
- * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
+ * Template part for the Pop of Culture category page.
+ * Based on theblotted-category.html structure.
  *
  * @package theblotted
  */
@@ -14,260 +14,213 @@ $cat_label = 'Pop of Culture';
 $cat_term = get_term_by( 'slug', $cat_slug, 'category' );
 $cat_link = $cat_term ? get_term_link( $cat_term ) : home_url( '/' );
 
-// Featured section: use ACF pinned posts if set, otherwise 5 most recent
-$featured_posts = [];
-if ( function_exists( 'get_field' ) ) {
-    $acf_featured = get_field( 'featured_posts' );
-    if ( ! empty( $acf_featured ) ) {
-        $featured_posts = $acf_featured;
-    }
-}
-if ( empty( $featured_posts ) ) {
-    $featured_query = new WP_Query(
-        [
-        'category_name'       => $cat_slug,
-        'posts_per_page'      => 5,
-        'ignore_sticky_posts' => 1,
-        'orderby'             => 'date',
-        'order'               => 'DESC',
-        ]
-    );
-    $featured_posts = $featured_query->posts;
-    wp_reset_postdata();
-}
-
-$post1 = isset( $featured_posts[0] ) ? $featured_posts[0] : null;
-$post2 = isset( $featured_posts[1] ) ? $featured_posts[1] : null;
-$post3 = isset( $featured_posts[2] ) ? $featured_posts[2] : null;
-$post4 = isset( $featured_posts[3] ) ? $featured_posts[3] : null;
-$post5 = isset( $featured_posts[4] ) ? $featured_posts[4] : null;
-
-$featured_ids = array_column( $featured_posts, 'ID' );
-
-// Explore section: up to 11 more posts
-$explore_query = new WP_Query(
-    [
-    'category_name'       => $cat_slug,
-    'posts_per_page'      => 11,
-    'post__not_in'        => $featured_ids,
-    'ignore_sticky_posts' => 1,
-    'orderby'             => 'date',
-    'order'               => 'DESC',
-    ]
-);
-$explore_posts = $explore_query->posts;
+// Featured posts (5 total)
+$featured_query = new WP_Query( [
+  'category_name'       => $cat_slug,
+  'posts_per_page'      => 5,
+  'ignore_sticky_posts' => 1,
+  'orderby'             => 'date',
+  'order'               => 'DESC',
+] );
+$featured_posts = $featured_query->posts;
 wp_reset_postdata();
 
-$ads_img = theblotted_acf_img_url( 'global_sidebar_ad', theblotted_get_settings_page_id(), esc_url( THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/Frame 46.png' ) );
-$ads_bg  = theblotted_acf_img_url( 'global_banner_ad', theblotted_get_settings_page_id(), esc_url( THEBLOTTED_ASSETS_DIR_IMAGES_URI . '/Frame 455.png' ) );
+$feat_big  = isset( $featured_posts[0] ) ? $featured_posts[0] : null;
+$feat_side = array_slice( $featured_posts, 1, 4 );
+
+// Grid posts (12 more, excluding featured)
+$featured_ids = wp_list_pluck( $featured_posts, 'ID' );
+$grid_query = new WP_Query( [
+  'category_name'       => $cat_slug,
+  'posts_per_page'      => 12,
+  'post__not_in'        => $featured_ids,
+  'ignore_sticky_posts' => 1,
+  'orderby'             => 'date',
+  'order'               => 'DESC',
+] );
+$grid_posts = $grid_query->posts;
+wp_reset_postdata();
+
+$mob_recent  = array_slice( $featured_posts, 0, 4 );
+$mob_explore = array_slice( $grid_posts, 0, 6 );
 ?>
 
-<main>
-    <div class="app-wrapper">
-        <section class="lifestyle-container">
-            <div class="lifestyle-cards">
-                <!-- First (featured) card -->
-                <div class="first-card">
-                    <?php if ( $post1 ) : ?>
-                    <div class="card-container">
-                        <div class="card-img">
-                            <?php if ( has_post_thumbnail( $post1 ) ) : ?>
-                                <a href="<?php echo esc_url( get_permalink( $post1 ) ); ?>">
-                                    <?php echo get_the_post_thumbnail( $post1, 'large', [ 'alt' => esc_attr( get_the_title( $post1 ) ) ] ); ?>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                        <div class="text-container">
-                            <h2 class="title">
-                                <a href="<?php echo esc_url( get_permalink( $post1 ) ); ?>">
-                                    <?php echo esc_html( get_the_title( $post1 ) ); ?>
-                                </a>
-                            </h2>
-                            <p class="discription">
-                                <?php
-                                $exc = get_the_excerpt( $post1 );
-                                if ( $exc === '' ) $exc = get_the_content( null, false, $post1 );
-                                echo esc_html( wp_trim_words( wp_strip_all_tags( $exc ), 25, '…' ) );
-                                ?>
-                            </p>
-                            <span class="author">
-                                <?php echo esc_html( get_the_date( 'F j', $post1 ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $post1->post_author ) ); ?>
-                            </span>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                <!-- Secondary cards -->
-                <div class="second-card">
-                    <div>
-                        <?php foreach ( [ $post2, $post3 ] as $idx => $p ) : ?>
-                            <?php if ( $p ) : ?>
-                            <div class="card-container <?php echo $idx === 0 ? 'card-1' : 'card-2'; ?>">
-                                <div class="card-img">
-                                    <?php if ( has_post_thumbnail( $p ) ) : ?>
-                                        <a href="<?php echo esc_url( get_permalink( $p ) ); ?>">
-                                            <?php echo get_the_post_thumbnail( $p, 'medium', [ 'alt' => esc_attr( get_the_title( $p ) ) ] ); ?>
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="text-container">
-                                    <h2 class="title">
-                                        <a href="<?php echo esc_url( get_permalink( $p ) ); ?>"><?php echo esc_html( get_the_title( $p ) ); ?></a>
-                                    </h2>
-                                    <p class="discription">
-                                        <?php
-                                        $exc = get_the_excerpt( $p );
-                                        if ( $exc === '' ) $exc = get_the_content( null, false, $p );
-                                        echo esc_html( wp_trim_words( wp_strip_all_tags( $exc ), 18, '…' ) );
-                                        ?>
-                                    </p>
-                                    <span class="author">
-                                        <?php echo esc_html( get_the_date( 'F j', $p ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $p->post_author ) ); ?>
-                                    </span>
-                                </div>
-                            </div>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </div>
-                    <div>
-                        <?php if ( $post4 ) : ?>
-                        <div class="card-container card-1">
-                            <div class="card-img">
-                                <?php if ( has_post_thumbnail( $post4 ) ) : ?>
-                                    <a href="<?php echo esc_url( get_permalink( $post4 ) ); ?>">
-                                        <?php echo get_the_post_thumbnail( $post4, 'medium', [ 'alt' => esc_attr( get_the_title( $post4 ) ) ] ); ?>
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                            <div class="text-container">
-                                <h2 class="title">
-                                    <a href="<?php echo esc_url( get_permalink( $post4 ) ); ?>"><?php echo esc_html( get_the_title( $post4 ) ); ?></a>
-                                </h2>
-                                <p class="discription">
-                                    <?php
-                                    $exc = get_the_excerpt( $post4 );
-                                    if ( $exc === '' ) $exc = get_the_content( null, false, $post4 );
-                                    echo esc_html( wp_trim_words( wp_strip_all_tags( $exc ), 18, '…' ) );
-                                    ?>
-                                </p>
-                                <span class="author">
-                                    <?php echo esc_html( get_the_date( 'F j', $post4 ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $post4->post_author ) ); ?>
-                                </span>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                        <div class="image card-2 show">
-                            <img src="<?php echo $ads_img; ?>" alt="advertisement" />
-                        </div>
-                        <?php if ( $post5 ) : ?>
-                        <div class="card-container card-2 hide">
-                            <div class="card-img">
-                                <?php if ( has_post_thumbnail( $post5 ) ) : ?>
-                                    <a href="<?php echo esc_url( get_permalink( $post5 ) ); ?>">
-                                        <?php echo get_the_post_thumbnail( $post5, 'medium', [ 'alt' => esc_attr( get_the_title( $post5 ) ) ] ); ?>
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                            <div class="text-container">
-                                <h2 class="title">
-                                    <a href="<?php echo esc_url( get_permalink( $post5 ) ); ?>"><?php echo esc_html( get_the_title( $post5 ) ); ?></a>
-                                </h2>
-                                <p class="discription">
-                                    <?php
-                                    $exc = get_the_excerpt( $post5 );
-                                    if ( $exc === '' ) $exc = get_the_content( null, false, $post5 );
-                                    echo esc_html( wp_trim_words( wp_strip_all_tags( $exc ), 18, '…' ) );
-                                    ?>
-                                </p>
-                                <span class="author">
-                                    <?php echo esc_html( get_the_date( 'F j', $post5 ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $post5->post_author ) ); ?>
-                                </span>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <hr class="vector" />
-        <section class="card-wrap">
-            <div class="nav-link">
-                <h3>Explore</h3>
-            </div>
-            <div class="card-section">
-                <div class="cards-grid">
-                    <?php
-                    $explore_count = 0;
-                    foreach ( $explore_posts as $ep ) :
-                        $explore_count++;
-                        if ( $explore_count === 6 ) :
-                    ?>
-                    <div class="image">
-                        <img src="<?php echo $ads_img; ?>" alt="advertisement" />
-                    </div>
-                    <?php endif; ?>
-                    <div class="card-container">
-                        <div class="card-img">
-                            <?php if ( has_post_thumbnail( $ep ) ) : ?>
-                                <a href="<?php echo esc_url( get_permalink( $ep ) ); ?>">
-                                    <?php echo get_the_post_thumbnail( $ep, 'medium', [ 'alt' => esc_attr( get_the_title( $ep ) ) ] ); ?>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                        <div class="text-container">
-                            <h2 class="title">
-                                <a href="<?php echo esc_url( get_permalink( $ep ) ); ?>"><?php echo esc_html( get_the_title( $ep ) ); ?></a>
-                            </h2>
-                            <p class="discription">
-                                <?php
-                                $exc = get_the_excerpt( $ep );
-                                if ( $exc === '' ) $exc = get_the_content( null, false, $ep );
-                                echo esc_html( wp_trim_words( wp_strip_all_tags( $exc ), 20, '…' ) );
-                                ?>
-                            </p>
-                            <span class="author">
-                                <?php echo esc_html( get_the_date( 'F j', $ep ) ); ?> | <?php echo esc_html( get_the_author_meta( 'display_name', $ep->post_author ) ); ?>
-                            </span>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php
-            $total_cat_posts = $cat_term ? $cat_term->count : 0;
-            $shown_posts     = count( $featured_posts ) + count( $explore_posts );
-            if ( $total_cat_posts > $shown_posts ) :
-            ?>
-            <a href="<?php echo esc_url( $cat_link ); ?>" class="btn">Load more</a>
-            <?php endif; ?>
-        </section>
-    </div>
-</main>
+<div class="page-wrap">
 
-<div class="image-background" style="background-color: #8e8585">
-    <div class="email-box">
-        <h2 style="max-width: 413px !important">
-            <?php esc_html_e( 'Subscribe to our newsletter to get weekly updates to your inbox.', 'theblotted' ); ?>
-        </h2>
-        <div class="email-container">
-            <form action="#" method="post">
-                <?php wp_nonce_field( 'theblotted_newsletter', 'newsletter_nonce' ); ?>
-                <input
-                    type="email"
-                    name="newsletter-email"
-                    autocomplete="email"
-                    placeholder="<?php esc_attr_e( 'Email', 'theblotted' ); ?>"
-                    required />
-                <button type="submit"><?php esc_html_e( 'Subscribe', 'theblotted' ); ?></button>
-            </form>
-        </div>
+  <!-- "RECENT" label — mobile only -->
+  <div class="mob-label mob-label-recent-desk"><?php esc_html_e( 'Recent', 'theblotted' ); ?></div>
+
+  <!-- ── FEATURED BLOCK ── -->
+  <div class="featured-grid">
+
+    <!-- Big left card -->
+    <?php if ( $feat_big ) : ?>
+    <article class="feat-big">
+      <a href="<?php echo esc_url( get_permalink( $feat_big ) ); ?>">
+        <?php if ( has_post_thumbnail( $feat_big ) ) : ?>
+          <div class="feat-big-img">
+            <?php echo get_the_post_thumbnail( $feat_big, 'large', [ 'alt' => esc_attr( get_the_title( $feat_big ) ) ] ); ?>
+          </div>
+        <?php else : ?>
+          <div class="feat-big-img ph-1"></div>
+        <?php endif; ?>
+      </a>
+      <h2 class="t">
+        <a href="<?php echo esc_url( get_permalink( $feat_big ) ); ?>"><?php echo esc_html( get_the_title( $feat_big ) ); ?></a>
+      </h2>
+      <p class="d"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt( $feat_big ) ), 20, '…' ) ); ?></p>
+      <div class="m"><?php echo esc_html( get_the_date( 'F j', $feat_big ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $feat_big->post_author ) ); ?></div>
+    </article>
+    <?php endif; ?>
+
+    <!-- Mid col (side cards 1 & 2) -->
+    <div class="feat-col">
+      <?php foreach ( array_slice( $feat_side, 0, 2 ) as $sc ) : ?>
+      <article class="feat-card">
+        <a href="<?php echo esc_url( get_permalink( $sc ) ); ?>">
+          <?php if ( has_post_thumbnail( $sc ) ) : ?>
+            <div class="feat-img">
+              <?php echo get_the_post_thumbnail( $sc, 'medium', [ 'alt' => esc_attr( get_the_title( $sc ) ) ] ); ?>
+            </div>
+          <?php else : ?>
+            <div class="feat-img ph-2"></div>
+          <?php endif; ?>
+        </a>
+        <h3 class="t">
+          <a href="<?php echo esc_url( get_permalink( $sc ) ); ?>"><?php echo esc_html( get_the_title( $sc ) ); ?></a>
+        </h3>
+        <p class="d"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt( $sc ) ), 18, '…' ) ); ?></p>
+        <div class="m"><?php echo esc_html( get_the_date( 'F j', $sc ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $sc->post_author ) ); ?></div>
+      </article>
+      <?php endforeach; ?>
     </div>
+
+    <!-- Right col (side cards 3 & 4) -->
+    <div class="feat-col">
+      <?php foreach ( array_slice( $feat_side, 2, 2 ) as $sc ) : ?>
+      <article class="feat-card">
+        <a href="<?php echo esc_url( get_permalink( $sc ) ); ?>">
+          <?php if ( has_post_thumbnail( $sc ) ) : ?>
+            <div class="feat-img">
+              <?php echo get_the_post_thumbnail( $sc, 'medium', [ 'alt' => esc_attr( get_the_title( $sc ) ) ] ); ?>
+            </div>
+          <?php else : ?>
+            <div class="feat-img ph-4"></div>
+          <?php endif; ?>
+        </a>
+        <h3 class="t">
+          <a href="<?php echo esc_url( get_permalink( $sc ) ); ?>"><?php echo esc_html( get_the_title( $sc ) ); ?></a>
+        </h3>
+        <p class="d"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt( $sc ) ), 18, '…' ) ); ?></p>
+        <div class="m"><?php echo esc_html( get_the_date( 'F j', $sc ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $sc->post_author ) ); ?></div>
+      </article>
+      <?php endforeach; ?>
+    </div>
+
+  </div><!-- /featured-grid -->
+
+  <hr class="divider desk-divider"/>
+
+  <!-- "EXPLORE" label — mobile only -->
+  <div class="mob-label mob-label-recent-desk" style="margin-top:24px;"><?php esc_html_e( 'Explore', 'theblotted' ); ?></div>
+
+  <!-- ── ARTICLE GRID ── -->
+  <?php if ( ! empty( $grid_posts ) ) : ?>
+  <div class="art-grid">
+    <?php foreach ( $grid_posts as $gp ) : ?>
+    <article class="art-card">
+      <a href="<?php echo esc_url( get_permalink( $gp ) ); ?>">
+        <?php if ( has_post_thumbnail( $gp ) ) : ?>
+          <div class="art-img">
+            <?php echo get_the_post_thumbnail( $gp, 'medium', [ 'alt' => esc_attr( get_the_title( $gp ) ) ] ); ?>
+          </div>
+        <?php else : ?>
+          <div class="art-img ph-6"></div>
+        <?php endif; ?>
+      </a>
+      <h3 class="t">
+        <a href="<?php echo esc_url( get_permalink( $gp ) ); ?>"><?php echo esc_html( get_the_title( $gp ) ); ?></a>
+      </h3>
+      <p class="d"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt( $gp ) ), 20, '…' ) ); ?></p>
+      <div class="m"><?php echo esc_html( get_the_date( 'F j', $gp ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $gp->post_author ) ); ?></div>
+    </article>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
+
+  <?php
+  $total_cat_posts = $cat_term ? $cat_term->count : 0;
+  $shown_posts = count( $featured_posts ) + count( $grid_posts );
+  if ( $total_cat_posts > $shown_posts ) :
+  ?>
+  <div class="load-more"><a href="<?php echo esc_url( $cat_link ); ?>"><button><?php esc_html_e( 'Load more', 'theblotted' ); ?></button></a></div>
+  <?php endif; ?>
+
+  <!-- ══ MOBILE RECENT — 4 full-width stacked cards ══ -->
+  <div class="mob-recent">
+    <?php foreach ( $mob_recent as $mr ) : ?>
+    <article class="mob-recent-card">
+      <a href="<?php echo esc_url( get_permalink( $mr ) ); ?>">
+        <?php if ( has_post_thumbnail( $mr ) ) : ?>
+          <div class="mob-recent-img">
+            <?php echo get_the_post_thumbnail( $mr, 'medium', [ 'alt' => esc_attr( get_the_title( $mr ) ) ] ); ?>
+          </div>
+        <?php else : ?>
+          <div class="mob-recent-img ph-1"></div>
+        <?php endif; ?>
+      </a>
+      <h2 class="t">
+        <a href="<?php echo esc_url( get_permalink( $mr ) ); ?>"><?php echo esc_html( get_the_title( $mr ) ); ?></a>
+      </h2>
+      <p class="d"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt( $mr ) ), 20, '…' ) ); ?></p>
+      <div class="m"><?php echo esc_html( get_the_date( 'F j', $mr ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $mr->post_author ) ); ?></div>
+    </article>
+    <?php endforeach; ?>
+  </div>
+
+  <!-- EXPLORE label — mobile only -->
+  <div class="mob-label" id="mob-explore-label" style="display:none; padding-top:20px; border-top:1px solid var(--color-divider); margin-top:4px;"><?php esc_html_e( 'Explore', 'theblotted' ); ?></div>
+
+  <!-- ══ MOBILE EXPLORE — horizontal thumb + text ══ -->
+  <div class="mob-explore">
+    <?php foreach ( $mob_explore as $idx => $me ) : ?>
+    <?php if ( $idx === 3 ) : ?>
+    <div class="mob-ad"><?php esc_html_e( 'AD SPACE', 'theblotted' ); ?></div>
+    <?php endif; ?>
+    <article class="mob-explore-card">
+      <a href="<?php echo esc_url( get_permalink( $me ) ); ?>">
+        <?php if ( has_post_thumbnail( $me ) ) : ?>
+          <div class="mob-explore-thumb">
+            <?php echo get_the_post_thumbnail( $me, 'thumbnail', [ 'alt' => esc_attr( get_the_title( $me ) ) ] ); ?>
+          </div>
+        <?php else : ?>
+          <div class="mob-explore-thumb ph-5"></div>
+        <?php endif; ?>
+      </a>
+      <div class="mob-explore-text">
+        <h3 class="t">
+          <a href="<?php echo esc_url( get_permalink( $me ) ); ?>"><?php echo esc_html( get_the_title( $me ) ); ?></a>
+        </h3>
+        <p class="d"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt( $me ) ), 15, '…' ) ); ?></p>
+        <div class="m"><?php echo esc_html( get_the_date( 'F j', $me ) ); ?> &nbsp;|&nbsp; <?php echo esc_html( get_the_author_meta( 'display_name', $me->post_author ) ); ?></div>
+      </div>
+    </article>
+    <?php endforeach; ?>
+  </div>
+
+  <div class="mob-ad"><?php esc_html_e( 'AD SPACE', 'theblotted' ); ?></div>
+  <div class="mob-load-more"><a href="<?php echo esc_url( $cat_link ); ?>"><button><?php esc_html_e( 'Load more', 'theblotted' ); ?></button></a></div>
+
+</div><!-- /page-wrap -->
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <p><?php esc_html_e( 'Subscribe to our newsletter to get weekly updates to your inbox.', 'theblotted' ); ?></p>
+  <div class="nl-form">
+    <form action="#" method="post">
+      <?php wp_nonce_field( 'theblotted_newsletter', 'newsletter_nonce' ); ?>
+      <input type="email" name="newsletter-email" autocomplete="email" placeholder="<?php esc_attr_e( 'Email', 'theblotted' ); ?>" required />
+      <button type="submit"><?php esc_html_e( 'Subscribe', 'theblotted' ); ?></button>
+    </form>
+  </div>
 </div>
-<div
-    class="image-background img-height"
-    style="
-          background-image: url('<?php echo $ads_bg; ?>');
-          background-blend-mode: multiply;
-          background-size: cover;
-          background-position: center;
-        "></div>

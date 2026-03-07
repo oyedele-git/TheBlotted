@@ -1,58 +1,21 @@
 /*!
 Theme Name: theblotted
 Theme URI: http://underscores.me/
-Author: Basil Okache
+Author: Underscores.me
 Author URI: http://underscores.me/
-Description: Theme for The Blotted
-Version: 1.0.0
-Tested up to: 5.4
-Requires PHP: 5.6
+Description: Custom theme for The Blotted
+Version: 1.0.1
 License: GNU General Public License v2 or later
 License URI: LICENSE
 Text Domain: theblotted
-Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready
-
-This theme, like WordPress, is licensed under the GPL.
-Use it to make something cool, have fun, and share what you've learned.
-
-theblotted is based on Underscores https://underscores.me/, (C) 2012-2020 Automattic, Inc.
-Underscores is distributed under the terms of the GNU GPL v2 or later.
-
-Normalizing styles have been helped along thanks to the fine work of
-Nicolas Gallagher and Jonathan Neal https://necolas.github.io/normalize.css/
 */
 
-/*--------------------------------------------------------------
->>> TABLE OF CONTENTS:
-----------------------------------------------------------------
-# Custom
-	- Base
-	- Layout
-	- Module
-
-
-*/
-//Tailwind Directives
-
-@tailwind base;
-
-@tailwind components;
-
-@tailwind utilities;
-
-// All styles go here
-
-@import "./abstracts/mixins";
-@import "./base/base";
-@import "./utilities/utilities";
-@import "./pages/mixins";
-
-//Import Page Styles
-// @import "./pages/header";
-//@import "./pages/footer";
-@import "./pages/home";
-// @import "./pages/issues";
-// @import "./pages/literature";
-// @import "./pages/cartoons";
-@import "./pages/lifestyle";
-// @import "./pages/popofculture";
+@use 'abstracts/variables';
+@use 'base/base';
+@use 'components/header';
+@use 'components/footer';
+@use 'components/newsletter';
+@use 'pages/home';
+@use 'pages/about';
+@use 'pages/article';
+@use 'pages/category';

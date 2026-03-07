@@ -1,15 +1,15 @@
 <?php
-/* Template part for Issues page */
+/* Template part for Politics page */
 
 /**
- * Template part for the Issues category page.
+ * Template part for the Politics category page.
  * Based on theblotted-category.html structure.
  *
  * @package theblotted
  */
 
-$cat_slug  = 'issues';
-$cat_label = 'Issues';
+$cat_slug  = 'politics';
+$cat_label = 'Politics';
 
 $cat_term = get_term_by( 'slug', $cat_slug, 'category' );
 $cat_link = $cat_term ? get_term_link( $cat_term ) : home_url( '/' );

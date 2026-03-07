@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  /* ── Fonts ── */
+  --font-display: 'Anton', sans-serif;   /* logo / headings */
+  --font-body:    'EB Garamond', serif;  /* body copy       */
+  --font-ui:      'Open Sans', sans-serif; /* nav / labels  */
+
+  /* ── Colours ── */
+  --color-bg:       #F5F0E8;
+  --color-dark:     #1a1a1a;
+  --color-mid:      #222222;
+  --color-muted:    #666666;
+  --color-divider:  rgba(0,0,0,0.13);
+  --color-white:    #ffffff;
+  --color-accent:   #F5A623; /* ad banner yellow */
+  --color-ink:      #0d0d0d;
+  --color-taupe:    #8c8479;
+
+  /* ── Spacing ── */
+  --page-padding-desktop: 60px;
+  --page-padding-mobile:  16px;
+
+  /* ── Logo size ── */
+  --logo-size-desktop: 68px;
+  --logo-size-mobile:  32px;
+
+  /* ── Article ── */
+  --article-max: 720px;
+}
