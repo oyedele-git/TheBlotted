@@ -10,7 +10,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 if (! defined('THEBLOTTED_VERSION')) {
     // Replace the version number of the theme on each release.
-    define('THEBLOTTED_VERSION', '1.0.1');
+    define('THEBLOTTED_VERSION', '1.0.2');
 }
 /**
  * Define paths to directories and files in the theme
