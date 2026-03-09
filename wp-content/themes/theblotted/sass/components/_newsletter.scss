@@ -48,8 +48,16 @@
   font-size: 15px;
   outline: none;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
 }
 
+.newsletter-form input::-webkit-input-placeholder,
+.nl-form input::-webkit-input-placeholder { color: rgba(255,255,255,0.65); }
+.newsletter-form input:-ms-input-placeholder,
+.nl-form input:-ms-input-placeholder { color: rgba(255,255,255,0.65); }
 .newsletter-form input::placeholder,
 .nl-form input::placeholder { color: rgba(255,255,255,0.65); }
 
