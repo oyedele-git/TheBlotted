@@ -18,12 +18,15 @@ function updateMobileText() {
   const s = slides[current];
   const title = s.dataset.title;
   const desc  = s.dataset.desc;
+  const url   = s.dataset.url;
   // above slider
   document.getElementById('mob-title').textContent = title;
   document.getElementById('mob-desc').textContent  = desc;
   // below slider
   document.getElementById('mob-footer-title').textContent = title;
   document.getElementById('mob-footer-desc').textContent  = desc;
+  const link = document.getElementById('mob-footer-link');
+  if (link) link.href = url;
   syncSpacer();
 }
 

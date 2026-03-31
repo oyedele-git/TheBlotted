@@ -7,8 +7,11 @@ html {
 }
 
 body {
-  background: var(--color-bg);
   background-color: var(--color-bg);
+  background-image: url('assets/img/background-layer.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   font-family: var(--font-body);
   color: var(--color-mid);
   overflow-x: hidden;
@@ -17,6 +20,7 @@ body {
 a {
   text-decoration: none;
   color: inherit;
+  font-family: inherit;
   transition: opacity .15s ease;
 }
 
@@ -34,4 +38,8 @@ button {
 img {
   display: block;
   max-width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
 }

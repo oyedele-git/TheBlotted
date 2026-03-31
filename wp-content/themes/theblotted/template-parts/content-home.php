@@ -45,9 +45,9 @@ foreach ( $slider_posts as $sp ) {
     $rendered_post_ids[] = $sp->ID;
 }
 
-// ── Pre-hero strip: 2 posts (desktop) ──
+// ── Pre-hero strip: 3 posts (desktop) ──
 $prehero_query = new WP_Query( [
-    'posts_per_page'      => 2,
+    'posts_per_page'      => 3,
     'post__not_in'        => $rendered_post_ids,
     'ignore_sticky_posts' => 1,
     'orderby'             => 'date',
@@ -85,14 +85,27 @@ foreach ( $prehero_posts as $ph_p ) {
     </div>
     <?php endforeach; ?>
 
-    <!-- Ad banner slot -->
-    <div class="ad-banner">
-      <div class="ad-copy">
-        <span class="ad-big"><?php esc_html_e( 'Black Friday', 'theblotted' ); ?></span>
-        <span class="ad-sale"><?php esc_html_e( 'Sale', 'theblotted' ); ?></span>
-        <span class="ad-sub"><?php esc_html_e( 'Limited Time Offer', 'theblotted' ); ?></span>
+    <?php if ( ! empty( $prehero_posts[2] ) ) :
+        $ph3_post  = $prehero_posts[2];
+        $ph3_cats  = get_the_category( $ph3_post->ID );
+        $ph3_label = $ph3_cats ? $ph3_cats[0]->name : '';
+        $ph3_thumb = get_the_post_thumbnail_url( $ph3_post->ID, 'thumbnail' );
+    ?>
+    <div class="pre-hero-card">
+      <a href="<?php echo esc_url( get_permalink( $ph3_post ) ); ?>" class="pre-hero-thumb">
+        <?php if ( $ph3_thumb ) : ?>
+          <img class="ph" src="<?php echo esc_url( $ph3_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $ph3_post ) ); ?>" />
+        <?php else : ?>
+          <div class="ph ph-1"></div>
+        <?php endif; ?>
+      </a>
+      <div class="pre-hero-text">
+        <span class="topic-label"><?php echo esc_html( $ph3_label ); ?></span>
+        <a href="<?php echo esc_url( get_permalink( $ph3_post ) ); ?>" class="post-title"><?php echo esc_html( get_the_title( $ph3_post ) ); ?></a>
+        <div class="post-author"><?php echo esc_html( get_the_author_meta( 'display_name', $ph3_post->post_author ) ); ?></div>
       </div>
     </div>
+    <?php endif; ?>
 
   </div>
 </div>
@@ -119,7 +132,8 @@ foreach ( $prehero_posts as $ph_p ) {
     ?>
     <div class="<?php echo esc_attr( $slide_class ); ?>"
          data-title="<?php echo esc_attr( $slide_title ); ?>"
-         data-desc="<?php echo esc_attr( $slide_desc ); ?>">
+         data-desc="<?php echo esc_attr( $slide_desc ); ?>"
+         data-url="<?php echo esc_url( get_permalink( $slide_post ) ); ?>">
       <?php if ( $slide_img ) : ?>
         <img class="slide-bg" src="<?php echo esc_url( $slide_img ); ?>" alt="<?php echo esc_attr( $slide_title ); ?>" />
       <?php else : ?>
@@ -141,8 +155,10 @@ foreach ( $prehero_posts as $ph_p ) {
   <!-- MOBILE: slide title + desc below image -->
   <div class="mobile-slide-footer" id="mob-footer">
     <?php if ( ! empty( $slider_posts ) ) : ?>
-    <h2 id="mob-footer-title"><?php echo esc_html( get_the_title( $slider_posts[0] ) ); ?></h2>
-    <p id="mob-footer-desc"><?php echo theblotted_home_excerpt( $slider_posts[0], 25 ); ?></p>
+    <a id="mob-footer-link" href="<?php echo esc_url( get_permalink( $slider_posts[0] ) ); ?>">
+      <h2 id="mob-footer-title"><?php echo esc_html( get_the_title( $slider_posts[0] ) ); ?></h2>
+      <p id="mob-footer-desc"><?php echo theblotted_home_excerpt( $slider_posts[0], 25 ); ?></p>
+    </a>
     <?php endif; ?>
   </div>
 </div><!-- /hero-wrap -->
