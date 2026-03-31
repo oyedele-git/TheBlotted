@@ -5,7 +5,7 @@
 /* ── MAIN CONTENT AREA ── */
 #main-content {
   width: 100%;
-  background-color: var(--color-bg);
+  background: transparent;
 }
 
 .main-inner {
@@ -83,7 +83,7 @@
 }
 
 .post-title {
-  font-family: var(--font-ui);
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
@@ -100,7 +100,7 @@
 
 /* ── PRE-HERO WRAP (page flow, desktop only) ── */
 .pre-hero-wrap {
-  background-color: var(--color-bg);
+  background: transparent;
   display: block;
   padding: 36px 0 36px;
 }
@@ -120,59 +120,12 @@
   border-bottom: 1px solid #eee;
 }
 
-/* ── AD BANNER ── */
-.ad-banner {
-  background: #000;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  position: relative;
-}
-.ad-banner::after {
-  content: '';
-  position: absolute;
-  top: -20px; right: -20px;
-  width: 160px; height: 160px;
-  background: var(--color-accent);
-  transform: rotate(-10deg) skewX(-4deg);
-}
-.ad-copy {
-  position: relative;
-  z-index: 1;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: column;
-  line-height: 1.05;
-}
-.ad-copy .ad-big {
-  font-family: var(--font-display);
-  font-size: 26px;
-  color: var(--color-white);
-  letter-spacing: 2px;
-}
-.ad-copy .ad-sale {
-  font-family: var(--font-body);
-  font-size: 24px;
-  font-weight: 700;
-  font-style: italic;
-  color: #e03030;
-}
-.ad-copy .ad-sub {
-  font-family: var(--font-ui);
-  font-size: 8.5px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.65);
-  margin-top: 2px;
-}
 
 /* ============================================================
    HERO SLIDER
    ============================================================ */
 .hero-wrap {
-  background: var(--color-bg);
+  background: transparent;
   padding: 0 var(--page-padding-desktop);
   position: relative;
 }
@@ -221,7 +174,7 @@
 /* Desktop: gradient + text overlaid on image */
 .slide-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 30%, rgba(20,10,4,0.93) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #251D14 100%);
   z-index: 1;
 }
 
@@ -473,7 +426,7 @@
 }
 .card-topic.light { color: rgba(255,255,255,0.75); }
 .card-title {
-  font-family: var(--font-ui);
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 700;
   text-transform: uppercase;
@@ -841,7 +794,6 @@
   .slide-content h1 { font-size: 34px; }
   .slide-content { padding: 30px 50px; }
   .pre-hero { grid-template-columns: 1fr 1fr; }
-  .ad-banner { display: none; }
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .cat-card:nth-child(4) { display: flex; }
   .cc-big-img { min-height: 200px; }

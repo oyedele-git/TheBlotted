@@ -2,7 +2,8 @@
    FOOTER
    ============================================================ */
 .site-footer {
-  background: var(--color-bg);
+  background: transparent;
+  font-weight: 700;
   padding: 0 var(--page-padding-desktop);
 }
 
@@ -69,6 +70,7 @@
 .foot-nav a {
   font-family: var(--font-ui);
   font-size: 13px;
+  font-weight: 700;
   color: var(--color-dark);
   text-decoration: none;
   transition: opacity 0.2s;
